@@ -1,0 +1,32 @@
+import { notFound } from 'next/navigation'
+import { mockTiers } from '@/mocks/tiers'
+import { VNPayCheckoutForm } from '@/components/features/subscription/VNPayCheckoutForm'
+import { Badge } from '@/components/ui/Badge'
+
+interface CheckoutPageProps {
+  searchParams: { tierId?: string }
+}
+
+export default function CheckoutPage({ searchParams }: CheckoutPageProps) {
+  const tier = mockTiers.find((t) => t.id === searchParams.tierId)
+
+  if (!tier || tier.price === 0) notFound()
+
+  return (
+    <main className="max-w-md mx-auto px-4 py-12">
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="text-2xl font-extrabold text-[var(--text-primary)]">Checkout</h1>
+          <Badge color={tier.badgeColor} label={tier.badgeLabel} />
+        </div>
+        <p className="text-[var(--text-secondary)] text-sm">
+          You&apos;re subscribing to the <strong>{tier.name}</strong> plan.
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-6 shadow-sm">
+        <VNPayCheckoutForm tier={tier} />
+      </div>
+    </main>
+  )
+}

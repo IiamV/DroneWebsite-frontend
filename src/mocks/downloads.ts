@@ -1,0 +1,40 @@
+import type { Download } from '@/types'
+
+export const mockDownloads: Download[] = [
+  {
+    id: 'dl-win',
+    title: 'Drone Application by Insai',
+    description: 'The official IDE for building, configuring, and simulating drone applications. Includes a full physics engine, real-time telemetry, and a visual flight planner.',
+    version: '1.0.0',
+    platform: 'windows',
+    fileSize: '312 MB',
+    storagePath: 'ide/windows/drone-app-insai-1.0.0-win.exe',
+    requiredTier: 'basic',
+    releaseDate: new Date('2024-03-01'),
+    changelog: '- Initial release\n- Visual flight planner\n- Real-time telemetry dashboard\n- Physics simulation engine\n- Betaflight configuration wizard',
+  },
+  {
+    id: 'dl-mac',
+    title: 'Drone Application by Insai',
+    description: 'The official IDE for building, configuring, and simulating drone applications. Includes a full physics engine, real-time telemetry, and a visual flight planner.',
+    version: '1.0.0',
+    platform: 'mac',
+    fileSize: '298 MB',
+    storagePath: 'ide/mac/drone-app-insai-1.0.0-mac.dmg',
+    requiredTier: 'basic',
+    releaseDate: new Date('2024-03-01'),
+    changelog: '- Initial release\n- Visual flight planner\n- Real-time telemetry dashboard\n- Physics simulation engine\n- Betaflight configuration wizard',
+  },
+  {
+    id: 'dl-linux',
+    title: 'Drone Application by Insai',
+    description: 'The official IDE for building, configuring, and simulating drone applications. Includes a full physics engine, real-time telemetry, and a visual flight planner.',
+    version: '1.0.0',
+    platform: 'linux',
+    fileSize: '285 MB',
+    storagePath: 'ide/linux/drone-app-insai-1.0.0-linux.AppImage',
+    requiredTier: 'basic',
+    releaseDate: new Date('2024-03-01'),
+    changelog: '- Initial release\n- Visual flight planner\n- Real-time telemetry dashboard\n- Physics simulation engine\n- Betaflight configuration wizard',
+  },
+]
