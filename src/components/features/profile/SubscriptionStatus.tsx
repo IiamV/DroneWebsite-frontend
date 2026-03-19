@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import type { Subscription, SubscriptionTier } from '@/types'
 import { ROUTES } from '@/constants/routes'
 
@@ -50,7 +51,7 @@ export function SubscriptionStatus({ subscription, tier }: SubscriptionStatusPro
         <ul className="space-y-1">
           {tier.features.map((feature) => (
             <li key={feature} className="flex items-center gap-2 text-sm text-[var(--text-primary)]">
-              <span className="text-green-500" aria-hidden="true">✓</span>
+              <Check size={14} className="text-green-500 shrink-0" aria-hidden="true" />
               {feature}
             </li>
           ))}
