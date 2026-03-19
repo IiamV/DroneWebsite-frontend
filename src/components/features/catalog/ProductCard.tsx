@@ -1,9 +1,9 @@
 'use client'
 
-import { memo, useState, useRef, useCallback } from 'react'
+import { memo } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Badge } from '@/components/ui/Badge'
+import { Package, Plus, Check } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
 import { ROUTES } from '@/constants/routes'
 
@@ -31,88 +31,55 @@ const CATEGORY_LABELS: Record<Product['category'], string> = {
 
 interface ProductCardProps {
   product: Product
+  inBuild?: boolean
+  onToggleBuild?: (id: string) => void
 }
 
-export const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
-  const [summaryVisible, setSummaryVisible] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
-
-  // Touch: tap to reveal summary; tap outside (focusout leaving card) to dismiss
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    e.stopPropagation()
-    setSummaryVisible((v) => !v)
-  }, [])
-
-  const handleBlur = useCallback((e: React.FocusEvent) => {
-    if (!cardRef.current?.contains(e.relatedTarget as Node)) {
-      setSummaryVisible(false)
-    }
-  }, [])
-
+export const ProductCard = memo(function ProductCard({ product, inBuild = false, onToggleBuild }: ProductCardProps) {
   return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className="group relative"
-      onTouchStart={handleTouchStart}
-      onBlur={handleBlur}
-    >
+    <div className="group relative rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden hover:border-[var(--accent)] transition-colors">
       <Link
         href={`${ROUTES.CATALOG}/${product.slug}`}
-        className="block rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden hover:border-[var(--accent)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-        style={{ touchAction: 'manipulation' }}
+        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
       >
-        {/* Thumbnail with hover/touch summary overlay */}
-        <div className="relative h-44 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] overflow-hidden">
-          <span className="text-5xl select-none">🚁</span>
-
-          {/*
-            Summary overlay:
-            - Desktop: shown on CSS :hover via group-hover (no JS needed)
-            - Touch: shown when summaryVisible state is true
-            @supports backdrop-filter: uses blur; fallback: solid dark bg
-          */}
-          <div
-            className={[
-              'absolute inset-0 flex items-end p-3 transition-opacity duration-200',
-              summaryVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
-            ].join(' ')}
-            aria-hidden="true"
-          >
-            {/* @supports backdrop-filter fallback via CSS class in globals.css */}
+        <div className="relative h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)]">
+          <Package size={44} aria-hidden="true" />
+          <div className="absolute inset-0 flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" aria-hidden="true">
             <p className="product-card-summary w-full rounded-md px-2 py-1.5 text-xs text-white leading-snug">
               {product.shortSummary}
             </p>
           </div>
         </div>
 
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <Badge
-              color={CATEGORY_COLORS[product.category]}
-              label={CATEGORY_LABELS[product.category]}
-            />
+        <div className="p-3">
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+            <Badge variant="outline" style={{ borderColor: CATEGORY_COLORS[product.category], color: CATEGORY_COLORS[product.category] }}>
+              {CATEGORY_LABELS[product.category]}
+            </Badge>
             <span className="text-xs text-[var(--text-secondary)]">{product.brand}</span>
           </div>
-
-          <h3 className="font-semibold text-[var(--text-primary)] mb-1 line-clamp-2 text-sm">
-            {product.name}
-          </h3>
-
-          <div className="flex flex-wrap gap-1 mt-2">
-            {product.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="text-xs px-1.5 py-0.5 rounded bg-[var(--bg-primary)] text-[var(--text-secondary)] border border-[var(--border)]"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
+          <h3 className="font-semibold text-[var(--text-primary)] line-clamp-2 text-sm">{product.name}</h3>
         </div>
       </Link>
-    </motion.div>
+
+      {onToggleBuild && (
+        <div className="px-3 pb-3">
+          <button
+            onClick={() => onToggleBuild(product.id)}
+            aria-label={inBuild ? `Remove ${product.name} from build` : `Add ${product.name} to build`}
+            aria-pressed={inBuild}
+            className={[
+              'w-full flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors border',
+              inBuild
+                ? 'bg-[var(--accent)] text-[var(--bg-primary)] border-[var(--accent)]'
+                : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--text-primary)]',
+            ].join(' ')}
+          >
+            {inBuild ? <Check size={12} /> : <Plus size={12} />}
+            {inBuild ? 'In build' : 'Add to build'}
+          </button>
+        </div>
+      )}
+    </div>
   )
 })

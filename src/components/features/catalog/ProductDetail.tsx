@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Badge } from '@/components/ui/Badge'
+import { Package, Check } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { CompatibilityPanel } from './CompatibilityPanel'
 import type { Product } from '@/types'
 
@@ -42,8 +43,8 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
         {/* Image gallery */}
         <div className="lg:w-1/2 space-y-3">
           {/* Main image */}
-          <div className="aspect-square rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center overflow-hidden">
-            <span className="text-8xl select-none" aria-label={product.name}>🚁</span>
+          <div className="aspect-square rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center overflow-hidden text-[var(--text-secondary)]">
+            <Package size={80} aria-label={product.name} />
           </div>
 
           {/* Thumbnails */}
@@ -64,7 +65,7 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
                   aria-label={`View image ${i + 1}`}
                   aria-pressed={activeImageIndex === i}
                 >
-                  <span className="text-xl">🚁</span>
+                  <Package size={18} aria-hidden="true" />
                 </button>
               ))}
             </div>
@@ -74,10 +75,9 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
         {/* Product info */}
         <div className="lg:w-1/2 space-y-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge
-              color={CATEGORY_COLORS[product.category]}
-              label={CATEGORY_LABELS[product.category]}
-            />
+            <Badge variant="outline" style={{ borderColor: CATEGORY_COLORS[product.category], color: CATEGORY_COLORS[product.category] }}>
+              {CATEGORY_LABELS[product.category]}
+            </Badge>
             <span className="text-sm text-[var(--text-secondary)]">{product.brand}</span>
           </div>
 
@@ -91,7 +91,7 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
             <ul className="space-y-1" role="list">
               {product.features.map((f) => (
                 <li key={f} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
-                  <span className="text-[var(--accent)] mt-0.5" aria-hidden="true">✓</span>
+                  <Check size={14} className="text-[var(--accent)] mt-0.5 shrink-0" aria-hidden="true" />
                   {f}
                 </li>
               ))}

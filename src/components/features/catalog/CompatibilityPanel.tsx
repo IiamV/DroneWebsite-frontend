@@ -1,7 +1,6 @@
-'use client'
-
 import Link from 'next/link'
-import { Badge } from '@/components/ui/Badge'
+import { Package } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
 import { ROUTES } from '@/constants/routes'
 
@@ -58,16 +57,14 @@ export function CompatibilityPanel({ compatibleProducts }: CompatibilityPanelPro
               className="flex items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-3 hover:border-[var(--accent)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] min-h-[44px]"
               style={{ touchAction: 'manipulation' }}
             >
-              <div className="w-10 h-10 rounded bg-[var(--bg-primary)] flex items-center justify-center shrink-0 text-lg">
-                🚁
+              <div className="w-10 h-10 rounded bg-[var(--bg-primary)] flex items-center justify-center shrink-0 text-[var(--text-secondary)]">
+                <Package size={18} aria-hidden="true" />
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium text-[var(--text-primary)] truncate">{p.name}</p>
-                <Badge
-                  color={CATEGORY_COLORS[p.category]}
-                  label={CATEGORY_LABELS[p.category]}
-                  className="mt-0.5"
-                />
+                <Badge variant="outline" style={{ borderColor: CATEGORY_COLORS[p.category], color: CATEGORY_COLORS[p.category] }} className="mt-0.5">
+                  {CATEGORY_LABELS[p.category]}
+                </Badge>
               </div>
             </Link>
           </li>

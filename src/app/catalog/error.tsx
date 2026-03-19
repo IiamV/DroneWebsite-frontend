@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 export default function CatalogError({
   error,
   reset,
@@ -7,6 +9,8 @@ export default function CatalogError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => { console.error('[CatalogError]', error) }, [error])
+
   return (
     <main className="max-w-7xl mx-auto px-4 py-12 text-center">
       <p className="text-[var(--text-secondary)] mb-4">Failed to load the product catalog.</p>

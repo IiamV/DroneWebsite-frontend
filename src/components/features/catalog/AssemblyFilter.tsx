@@ -1,6 +1,6 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { X, Package } from 'lucide-react'
 import type { Product } from '@/types'
 
 const CATEGORY_LABELS: Record<Product['category'], string> = {
@@ -15,86 +15,58 @@ const CATEGORY_LABELS: Record<Product['category'], string> = {
 }
 
 interface AssemblyFilterProps {
-  products: Product[]
-  selectedIds: string[]
-  onToggle: (id: string) => void
+  selectedProducts: Product[]
+  onRemove: (id: string) => void
   onClear: () => void
 }
 
-// Group products by category for the sidebar
-function groupByCategory(products: Product[]) {
-  const groups: Partial<Record<Product['category'], Product[]>> = {}
-  for (const p of products) {
-    if (!groups[p.category]) groups[p.category] = []
-    groups[p.category]!.push(p)
-  }
-  return groups
-}
-
-export function AssemblyFilter({ products, selectedIds, onToggle, onClear }: AssemblyFilterProps) {
-  const groups = groupByCategory(products)
-
+export function AssemblyFilter({ selectedProducts, onRemove, onClear }: AssemblyFilterProps) {
   return (
-    <aside className="w-full lg:w-64 shrink-0" aria-label="Assembly compatibility filter">
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-4">
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="font-semibold text-[var(--text-primary)] text-sm">Build Filter</h2>
-          {selectedIds.length > 0 && (
+    <aside className="w-full lg:w-56 shrink-0" aria-label="Build compatibility filter">
+      <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-4 sticky top-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold text-[var(--text-primary)] text-sm">My Build</h2>
+          {selectedProducts.length > 0 && (
             <button
               onClick={onClear}
-              className="flex items-center gap-1 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] min-h-[44px] min-w-[44px] justify-end"
-              style={{ touchAction: 'manipulation' }}
-              aria-label="Clear all selected components"
+              className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              aria-label="Clear build"
             >
-              <X size={12} />
-              Clear
+              Clear all
             </button>
           )}
         </div>
 
-        <p className="text-xs text-[var(--text-secondary)] mb-4">
-          Select components to see what&apos;s compatible with your build.
-        </p>
+        {selectedProducts.length === 0 ? (
+          <div className="text-center py-6">
+            <Package size={28} className="mx-auto mb-2 text-[var(--text-secondary)] opacity-40" aria-hidden="true" />
+            <p className="text-xs text-[var(--text-secondary)]">
+              Add products to filter by compatibility.
+            </p>
+          </div>
+        ) : (
+          <ul className="space-y-2" role="list">
+            {selectedProducts.map((p) => (
+              <li key={p.id} className="flex items-center gap-2 text-sm">
+                <div className="flex-1 min-w-0">
+                  <p className="truncate text-[var(--text-primary)] text-xs font-medium">{p.name}</p>
+                  <p className="text-[var(--text-secondary)] text-xs">{CATEGORY_LABELS[p.category]}</p>
+                </div>
+                <button
+                  onClick={() => onRemove(p.id)}
+                  aria-label={`Remove ${p.name} from build`}
+                  className="shrink-0 p-1 rounded hover:bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                >
+                  <X size={12} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
 
-        <div className="space-y-4">
-          {(Object.entries(groups) as [Product['category'], Product[]][]).map(([category, items]) => (
-            <div key={category}>
-              <p className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-1.5">
-                {CATEGORY_LABELS[category]}
-              </p>
-              <ul className="space-y-0.5" role="list">
-                {items.map((product) => {
-                  const checked = selectedIds.includes(product.id)
-                  return (
-                    <li key={product.id}>
-                      <label
-                        className={[
-                          'flex items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer transition-colors text-sm min-h-[44px]',
-                          'hover:bg-[var(--bg-primary)]',
-                          checked ? 'bg-[var(--bg-primary)] font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
-                        ].join(' ')}
-                        style={{ touchAction: 'manipulation' }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => onToggle(product.id)}
-                          className="accent-[var(--accent)] shrink-0"
-                          aria-label={`Add ${product.name} to build`}
-                        />
-                        <span className="leading-snug truncate">{product.name}</span>
-                      </label>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        {selectedIds.length > 0 && (
-          <p className="mt-4 text-xs text-[var(--text-secondary)] border-t border-[var(--border)] pt-3">
-            {selectedIds.length} component{selectedIds.length > 1 ? 's' : ''} in build
+        {selectedProducts.length > 0 && (
+          <p className="mt-3 pt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
+            {selectedProducts.length} component{selectedProducts.length !== 1 ? 's' : ''} — showing compatible products
           </p>
         )}
       </div>
