@@ -1,8 +1,8 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import React from 'react'
 import { Monitor, Apple, Terminal, Download as DownloadIcon } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/Toast'
 import type { Download } from '@/types'
 
@@ -20,65 +20,41 @@ const PLATFORM_LABELS: Record<Download['platform'], string> = {
   all: 'All Platforms',
 }
 
-import React from 'react'
-
-interface DownloadListProps {
-  downloads: Download[]
-}
-
-export function DownloadList({ downloads }: DownloadListProps) {
+export function DownloadList({ downloads }: { downloads: Download[] }) {
   const { toast } = useToast()
 
   if (downloads.length === 0) {
-    return (
-      <p className="text-[var(--text-secondary)] py-8 text-center">
-        No downloads available for the selected platform.
-      </p>
-    )
+    return <p className="text-muted-foreground py-8 text-center">No downloads available for the selected platform.</p>
   }
 
   return (
     <ul className="space-y-4" aria-label="Available downloads">
-      {downloads.map((dl, i) => (
-        <motion.li
+      {downloads.map((dl) => (
+        <li
           key={dl.id}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: i * 0.05 }}
-          className="flex items-center gap-4 p-5 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
+          className="flex items-center gap-4 p-5 bg-card rounded-xl border hover:border-primary transition-colors"
         >
-          <div
-            className="h-12 w-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-[var(--text-secondary)]"
-            aria-hidden="true"
-          >
+          <div className="h-12 w-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-muted border text-muted-foreground" aria-hidden="true">
             {PLATFORM_ICONS[dl.platform]}
           </div>
-
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-[var(--text-primary)] truncate">
-              {dl.title}
-            </h3>
-            <p className="text-sm text-[var(--text-secondary)] mt-0.5 line-clamp-1">
-              {dl.description}
-            </p>
-            <div className="flex flex-wrap gap-3 mt-1.5 text-xs text-[var(--text-secondary)]">
+            <h3 className="font-semibold truncate">{dl.title}</h3>
+            <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">{dl.description}</p>
+            <div className="flex flex-wrap gap-3 mt-1.5 text-xs text-muted-foreground">
               <span>v{dl.version}</span>
-              <span aria-label={`Platform: ${PLATFORM_LABELS[dl.platform]}`}>
-                {PLATFORM_LABELS[dl.platform]}
-              </span>
-              <span aria-label={`File size: ${dl.fileSize}`}>{dl.fileSize}</span>
+              <span>{PLATFORM_LABELS[dl.platform]}</span>
+              <span>{dl.fileSize}</span>
             </div>
           </div>
-
           <Button
-            variant="primary"
-            className="flex-shrink-0 text-sm"
-            aria-label={`Download ${dl.title} v${dl.version} for ${PLATFORM_LABELS[dl.platform]}`}
+            className="flex-shrink-0"
             onClick={() => toast('Download will be available after backend setup', 'info')}
+            aria-label={`Download ${dl.title} v${dl.version}`}
           >
+            <DownloadIcon size={16} className="mr-2" />
             Download
           </Button>
-        </motion.li>
+        </li>
       ))}
     </ul>
   )
