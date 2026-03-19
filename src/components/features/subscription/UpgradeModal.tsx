@@ -1,8 +1,8 @@
 'use client'
 
-import { Modal } from '@/components/ui/Modal'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import { TierComparisonTable } from './TierComparisonTable'
-import { Button } from '@/components/ui/Button'
 import { mockTiers } from '@/mocks/tiers'
 import { useRouter } from 'next/navigation'
 import type { SubscriptionTier } from '@/types'
@@ -25,27 +25,23 @@ export function UpgradeModal({ open, onClose, currentTierId, requiredTier }: Upg
   }
 
   return (
-    <Modal open={open} onClose={onClose} className="max-w-4xl w-full">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-1">Upgrade your plan</h2>
-        <p className="text-sm text-[var(--text-secondary)]">
-          {requiredTier
-            ? `This content requires the ${requiredTier.name} plan or higher.`
-            : 'Unlock this content by upgrading your subscription.'}
-        </p>
-      </div>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
+      <DialogContent className="max-w-4xl w-full">
+        <DialogHeader>
+          <DialogTitle>Upgrade your plan</DialogTitle>
+          <DialogDescription>
+            {requiredTier
+              ? `This content requires the ${requiredTier.name} plan or higher.`
+              : 'Unlock this content by upgrading your subscription.'}
+          </DialogDescription>
+        </DialogHeader>
 
-      <TierComparisonTable
-        tiers={mockTiers}
-        currentTierId={currentTierId}
-        onSelectTier={handleSelectTier}
-      />
+        <TierComparisonTable tiers={mockTiers} currentTierId={currentTierId} onSelectTier={handleSelectTier} />
 
-      <div className="mt-6 flex justify-end">
-        <Button variant="ghost" onClick={onClose}>
-          Maybe later
-        </Button>
-      </div>
-    </Modal>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>Maybe later</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

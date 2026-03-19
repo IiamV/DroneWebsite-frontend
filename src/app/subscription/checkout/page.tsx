@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { mockTiers } from '@/mocks/tiers'
 import { VNPayCheckoutForm } from '@/components/features/subscription/VNPayCheckoutForm'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 
 interface CheckoutPageProps {
   searchParams: { tierId?: string }
@@ -17,7 +17,7 @@ export default function CheckoutPage({ searchParams }: CheckoutPageProps) {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <h1 className="text-2xl font-extrabold text-[var(--text-primary)]">Checkout</h1>
-          <Badge color={tier.badgeColor} label={tier.badgeLabel} />
+          <Badge variant="outline" style={{ borderColor: tier.badgeColor, color: tier.badgeColor }}>{tier.badgeLabel}</Badge>
         </div>
         <p className="text-[var(--text-secondary)] text-sm">
           You&apos;re subscribing to the <strong>{tier.name}</strong> plan.
