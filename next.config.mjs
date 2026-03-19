@@ -19,14 +19,7 @@ const nextConfig = {
   },
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   async redirects() {
-    if (isGithubPages) return []
-    return [
-      {
-        source: '/docs',
-        destination: '/docs/getting-started',
-        permanent: true,
-      },
-    ]
+    return []
   },
 }
 
