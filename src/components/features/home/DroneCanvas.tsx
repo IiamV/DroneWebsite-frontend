@@ -51,7 +51,8 @@ interface DroneModelProps {
 
 function DroneModel({ scrollY }: DroneModelProps) {
   const groupRef = useRef<THREE.Group>(null)
-  const { scene } = useGLTF('/models/drone.glb')
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
+  const { scene } = useGLTF(`${basePath}/models/drone.glb`)
   const { clock } = useThree()
 
   useFrame(() => {

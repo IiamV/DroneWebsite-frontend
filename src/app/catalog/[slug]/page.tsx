@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { mockProducts } from '@/mocks/products'
 import { ProductDetail } from '@/components/features/catalog/ProductDetail'
@@ -12,7 +11,11 @@ export default function ProductDetailPage({ params }: Props) {
   const product = mockProducts.find((p) => p.slug === params.slug)
 
   if (!product) {
-    notFound()
+    return (
+      <main className="max-w-5xl mx-auto px-4 py-12 text-center">
+        <p className="text-[var(--text-secondary)]">Product not found.</p>
+      </main>
+    )
   }
 
   const compatibleProducts = mockProducts.filter((p) =>

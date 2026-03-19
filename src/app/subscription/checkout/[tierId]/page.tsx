@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation'
 import { mockTiers } from '@/mocks/tiers'
 import { VNPayCheckoutForm } from '@/components/features/subscription/VNPayCheckoutForm'
 import { Badge } from '@/components/ui/badge'
@@ -10,7 +9,13 @@ interface CheckoutPageProps {
 export default function CheckoutPage({ params }: CheckoutPageProps) {
   const tier = mockTiers.find((t) => t.id === params.tierId)
 
-  if (!tier || tier.price === 0) notFound()
+  if (!tier || tier.price === 0) {
+    return (
+      <main className="max-w-md mx-auto px-4 py-12 text-center">
+        <p className="text-[var(--text-secondary)]">Plan not found.</p>
+      </main>
+    )
+  }
 
   return (
     <main className="max-w-md mx-auto px-4 py-12">

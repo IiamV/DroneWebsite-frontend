@@ -1,21 +1,23 @@
-import { notFound } from 'next/navigation'
 import { mockDocs } from '@/mocks/docs'
 import { DocSidebar } from '@/components/features/docs/DocSidebar'
 import { DocContent } from '@/components/features/docs/DocContent'
 import { DocBreadcrumb } from '@/components/features/docs/DocBreadcrumb'
 
 interface DocsPageProps {
-  params: Promise<{ slug: string[] }>
+  params: { slug: string[] }
 }
 
-export default async function DocsPage({ params }: DocsPageProps) {
-  const { slug } = await params
+export default function DocsPage({ params }: DocsPageProps) {
+  const { slug } = params
   const slugPath = slug.join('/')
   const doc = mockDocs.find((d) => d.slug.join('/') === slugPath)
 
-  // Call notFound() before any rendering to avoid hooks count mismatch
   if (!doc) {
-    notFound()
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-12 text-center">
+        <p className="text-[var(--text-secondary)]">Page not found.</p>
+      </div>
+    )
   }
 
   return (
