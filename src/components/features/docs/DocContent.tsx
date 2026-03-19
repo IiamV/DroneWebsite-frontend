@@ -1,59 +1,66 @@
-import { MDXRemote } from 'next-mdx-remote/rsc'
 import type { DocPage } from '@/types'
 
 interface DocContentProps {
   doc: DocPage
 }
 
-const mdxComponents = {
-  h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="text-2xl font-bold text-[var(--text-primary)] mt-0 mb-4" {...props} />
-  ),
-  h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-8 mb-3" {...props} />
-  ),
-  h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="text-lg font-semibold text-[var(--text-primary)] mt-6 mb-2" {...props} />
-  ),
-  p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p className="text-[var(--text-secondary)] leading-relaxed mb-4" {...props} />
-  ),
-  ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
-    <ul className="list-disc list-inside space-y-1 mb-4 text-[var(--text-secondary)]" {...props} />
-  ),
-  ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
-    <ol className="list-decimal list-inside space-y-1 mb-4 text-[var(--text-secondary)]" {...props} />
-  ),
-  li: (props: React.HTMLAttributes<HTMLLIElement>) => (
-    <li className="leading-relaxed" {...props} />
-  ),
-  code: (props: React.HTMLAttributes<HTMLElement>) => (
-    <code
-      className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-1.5 py-0.5 text-sm font-mono text-[var(--text-primary)]"
-      {...props}
-    />
-  ),
-  pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
-    <pre
-      className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-4 overflow-x-auto text-sm font-mono text-[var(--text-primary)] mb-4"
-      {...props}
-    />
-  ),
-  strong: (props: React.HTMLAttributes<HTMLElement>) => (
-    <strong className="font-semibold text-[var(--text-primary)]" {...props} />
-  ),
-  a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-    <a
-      className="text-[var(--accent)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded"
-      {...props}
-    />
-  ),
+// Simple markdown-to-HTML renderer — no async compilation, no external deps
+function renderMarkdown(md: string): string {
+  return md
+    // Fenced code blocks
+    .replace(/```[\w]*\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+    // Inline code
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Tables (basic)
+    .replace(/^\|(.+)\|\s*$/gm, (_, row) => {
+      const cells = row.split('|').map((c: string) => c.trim())
+      return '<tr>' + cells.map((c: string) => `<td>${c}</td>`).join('') + '</tr>'
+    })
+    .replace(/(<tr>.*<\/tr>\n?)+/g, (match) => {
+      const rows = match.trim().split('\n')
+      // First row is header, second is separator — skip separator
+      const header = rows[0].replace(/<td>/g, '<th>').replace(/<\/td>/g, '</th>')
+      const body = rows.slice(2).join('\n')
+      return `<table><thead>${header}</thead><tbody>${body}</tbody></table>`
+    })
+    // Headings
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    // Bold
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Italic
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    // Ordered list items
+    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, (match) => {
+      if (/^\d/.test(match)) return `<ol>${match}</ol>`
+      return `<ul>${match}</ul>`
+    })
+    // Unordered list items
+    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$1</ul>')
+    // Blockquote
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    // HR
+    .replace(/^---$/gm, '<hr />')
+    // Paragraphs — wrap lines not already wrapped in a block tag
+    .replace(/^(?!<[a-z]|$)(.+)$/gm, '<p>$1</p>')
+    // Clean up extra blank lines
+    .replace(/\n{3,}/g, '\n\n')
 }
 
 export function DocContent({ doc }: DocContentProps) {
+  const html = renderMarkdown(doc.content)
+
   return (
-    <article aria-label={doc.title}>
-      <MDXRemote source={doc.content} components={mdxComponents} />
+    <article aria-label={doc.title} className="doc-content">
+      <div
+        className="prose-custom"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
       <p className="mt-10 text-xs text-[var(--text-secondary)] border-t border-[var(--border)] pt-4">
         Last updated:{' '}
         {doc.updatedAt.toLocaleDateString('en-US', {

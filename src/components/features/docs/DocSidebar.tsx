@@ -1,7 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
+import { cn } from '@/lib/utils'
 import type { DocPage } from '@/types'
 
 interface DocSidebarProps {
@@ -31,10 +33,9 @@ function buildTree(docs: DocPage[]): TreeNode[] {
 interface NavItemProps {
   node: TreeNode
   currentSlug: string[]
-  depth: number
 }
 
-function NavItem({ node, currentSlug, depth }: NavItemProps) {
+function NavItem({ node, currentSlug }: NavItemProps) {
   const href = '/docs/' + node.doc.slug.join('/')
   const isActive = node.doc.slug.join('/') === currentSlug.join('/')
   const hasChildren = node.children.length > 0
@@ -45,48 +46,42 @@ function NavItem({ node, currentSlug, depth }: NavItemProps) {
 
   return (
     <li>
-      <div className="flex items-center gap-1">
-        {hasChildren && (
+      <div className="flex items-center gap-0.5">
+        {hasChildren ? (
           <button
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? `Collapse ${node.doc.title}` : `Expand ${node.doc.title}`}
-            className="p-1 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] transition-colors"
+            className="p-1 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] transition-colors shrink-0"
           >
-            <svg
-              className={`w-3 h-3 transition-transform ${open ? 'rotate-90' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2.5}
+            <ChevronRight
+              size={12}
+              className={cn('transition-transform duration-150', open && 'rotate-90')}
               aria-hidden="true"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
+            />
           </button>
+        ) : (
+          <span className="w-5 shrink-0" />
         )}
         <Link
           href={href}
           aria-current={isActive ? 'page' : undefined}
-          className={[
+          className={cn(
             'flex-1 px-2 py-1.5 rounded-md text-sm transition-colors',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
-            !hasChildren && 'ml-5',
             isActive
               ? 'bg-[var(--accent)] text-[var(--bg-primary)] font-medium'
-              : 'text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]',
-          ]
-            .filter(Boolean)
-            .join(' ')}
+              : 'text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]'
+          )}
         >
           {node.doc.title}
         </Link>
       </div>
 
       {hasChildren && open && (
-        <ul className="mt-1 ml-4 space-y-1 border-l border-[var(--border)] pl-3">
+        <ul className="mt-0.5 ml-5 space-y-0.5 border-l border-[var(--border)] pl-2">
           {node.children.map((child) => (
-            <NavItem key={child.doc.id} node={child} currentSlug={currentSlug} depth={depth + 1} />
+            <NavItem key={child.doc.id} node={child} currentSlug={currentSlug} />
           ))}
         </ul>
       )}
@@ -99,12 +94,12 @@ export function DocSidebar({ docs, currentSlug }: DocSidebarProps) {
 
   return (
     <nav aria-label="Documentation navigation">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] mb-3 px-2">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] mb-3 px-2">
         Documentation
-      </h2>
-      <ul className="space-y-1">
+      </p>
+      <ul className="space-y-0.5">
         {tree.map((node) => (
-          <NavItem key={node.doc.id} node={node} currentSlug={currentSlug} depth={0} />
+          <NavItem key={node.doc.id} node={node} currentSlug={currentSlug} />
         ))}
       </ul>
     </nav>
