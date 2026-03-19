@@ -8,6 +8,15 @@ const nextConfig = {
     ],
   },
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
+  async redirects() {
+    return [
+      {
+        source: '/docs',
+        destination: '/docs/getting-started',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig
