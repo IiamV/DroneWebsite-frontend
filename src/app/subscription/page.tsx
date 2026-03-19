@@ -1,5 +1,4 @@
 import { mockTiers } from '@/mocks/tiers'
-import { TierComparisonTable } from '@/components/features/subscription/TierComparisonTable'
 import { SubscriptionPageClient } from '@/components/features/subscription/SubscriptionPageClient'
 
 export default function SubscriptionPage() {
