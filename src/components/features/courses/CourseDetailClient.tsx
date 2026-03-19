@@ -1,10 +1,11 @@
 'use client'
 
+import { Lock } from 'lucide-react'
 import { useState } from 'react'
 import { ModuleSidebar } from './ModuleSidebar'
 import { CoursePlayer } from './CoursePlayer'
 import { UpgradeModal } from '@/components/features/subscription/UpgradeModal'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import type { Course, Subscription, SubscriptionTier } from '@/types'
 import { TIER_RANK } from '@/constants/tiers'
 
@@ -46,10 +47,9 @@ export function CourseDetailClient({ course, subscription, tiers }: CourseDetail
       {/* Course header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
-          <Badge
-            color={DIFFICULTY_COLORS[course.difficulty]}
-            label={course.difficulty.charAt(0).toUpperCase() + course.difficulty.slice(1)}
-          />
+          <Badge variant="outline" style={{ borderColor: DIFFICULTY_COLORS[course.difficulty], color: DIFFICULTY_COLORS[course.difficulty] }}>
+            {course.difficulty.charAt(0).toUpperCase() + course.difficulty.slice(1)}
+          </Badge>
           <span className="text-sm text-[var(--text-secondary)] capitalize">{course.category}</span>
           <span className="text-sm text-[var(--text-secondary)]">·</span>
           <span className="text-sm text-[var(--text-secondary)]">{durationLabel}</span>
@@ -78,7 +78,11 @@ export function CourseDetailClient({ course, subscription, tiers }: CourseDetail
         </div>
       ) : (
         <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-10 text-center">
-          <div className="text-5xl mb-4">🔒</div>
+          <div className="flex justify-center mb-4">
+            <div className="w-14 h-14 rounded-full bg-[var(--bg-primary)] border border-[var(--border)] flex items-center justify-center text-[var(--text-secondary)]">
+              <Lock size={24} />
+            </div>
+          </div>
           <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
             {requiredTier ? `${requiredTier.name} plan required` : 'Upgrade required'}
           </h2>

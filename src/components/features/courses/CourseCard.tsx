@@ -3,7 +3,8 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Badge } from '@/components/ui/Badge'
+import { Cpu } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import type { Course } from '@/types'
 import { ROUTES } from '@/constants/routes'
 
@@ -36,16 +37,15 @@ export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) 
         style={{ touchAction: 'manipulation' }}
       >
         {/* Thumbnail placeholder */}
-        <div className="h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)]">
-          <span className="text-4xl">🚁</span>
+        <div className="h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)]">
+          <Cpu size={40} aria-hidden="true" />
         </div>
 
         <div className="p-4">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <Badge
-              color={DIFFICULTY_COLORS[course.difficulty]}
-              label={course.difficulty.charAt(0).toUpperCase() + course.difficulty.slice(1)}
-            />
+            <Badge variant="outline" style={{ borderColor: DIFFICULTY_COLORS[course.difficulty], color: DIFFICULTY_COLORS[course.difficulty] }}>
+              {course.difficulty.charAt(0).toUpperCase() + course.difficulty.slice(1)}
+            </Badge>
             <span className="text-xs text-[var(--text-secondary)] capitalize">{course.category}</span>
           </div>
 

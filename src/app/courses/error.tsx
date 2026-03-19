@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { GraduationCap } from 'lucide-react'
 
 interface ErrorProps {
   error: Error & { digest?: string }
@@ -14,7 +15,9 @@ export default function CoursesError({ error, reset }: ErrorProps) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
-      <div className="text-5xl mb-4">🎓</div>
+      <div className="w-14 h-14 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] flex items-center justify-center text-[var(--text-secondary)] mb-4">
+        <GraduationCap size={24} />
+      </div>
       <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
         Failed to load courses
       </h2>
