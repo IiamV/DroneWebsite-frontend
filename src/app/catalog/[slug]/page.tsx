@@ -21,7 +21,6 @@ export default function ProductDetailPage({ params }: Props) {
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
-      {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mb-8 text-sm text-[var(--text-secondary)]">
         <ol className="flex items-center gap-2 flex-wrap">
           <li>
@@ -42,4 +41,8 @@ export default function ProductDetailPage({ params }: Props) {
       <ProductDetail product={product} compatibleProducts={compatibleProducts} />
     </main>
   )
+}
+
+export function generateStaticParams() {
+  return mockProducts.map((p) => ({ slug: p.slug }))
 }

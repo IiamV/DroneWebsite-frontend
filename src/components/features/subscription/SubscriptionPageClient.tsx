@@ -14,7 +14,7 @@ export function SubscriptionPageClient({ tiers }: SubscriptionPageClientProps) {
 
   function handleSelectTier(tier: SubscriptionTier) {
     if (tier.price === 0) return
-    router.push(`${ROUTES.SUBSCRIPTION_CHECKOUT}?tierId=${tier.id}`)
+    router.push(`${ROUTES.SUBSCRIPTION_CHECKOUT}/${tier.id}`)
   }
 
   return <TierComparisonTable tiers={tiers} onSelectTier={handleSelectTier} />

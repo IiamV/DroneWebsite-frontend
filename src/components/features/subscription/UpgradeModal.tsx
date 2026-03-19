@@ -21,7 +21,7 @@ export function UpgradeModal({ open, onClose, currentTierId, requiredTier }: Upg
   function handleSelectTier(tier: SubscriptionTier) {
     if (tier.price === 0) return
     onClose()
-    router.push(`${ROUTES.SUBSCRIPTION_CHECKOUT}?tierId=${tier.id}`)
+    router.push(`${ROUTES.SUBSCRIPTION_CHECKOUT}/${tier.id}`)
   }
 
   return (

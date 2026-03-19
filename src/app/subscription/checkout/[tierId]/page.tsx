@@ -4,11 +4,11 @@ import { VNPayCheckoutForm } from '@/components/features/subscription/VNPayCheck
 import { Badge } from '@/components/ui/badge'
 
 interface CheckoutPageProps {
-  searchParams: { tierId?: string }
+  params: { tierId: string }
 }
 
-export default function CheckoutPage({ searchParams }: CheckoutPageProps) {
-  const tier = mockTiers.find((t) => t.id === searchParams.tierId)
+export default function CheckoutPage({ params }: CheckoutPageProps) {
+  const tier = mockTiers.find((t) => t.id === params.tierId)
 
   if (!tier || tier.price === 0) notFound()
 
@@ -23,10 +23,13 @@ export default function CheckoutPage({ searchParams }: CheckoutPageProps) {
           You&apos;re subscribing to the <strong>{tier.name}</strong> plan.
         </p>
       </div>
-
       <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] p-6 shadow-sm">
         <VNPayCheckoutForm tier={tier} />
       </div>
     </main>
   )
+}
+
+export function generateStaticParams() {
+  return mockTiers.filter((t) => t.price > 0).map((t) => ({ tierId: t.id }))
 }
