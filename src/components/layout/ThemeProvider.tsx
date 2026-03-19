@@ -12,14 +12,17 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // Server always renders 'light' — suppressHydrationWarning on <html> handles the data-theme attr.
+  // The blocking inline script sets data-theme before paint so CSS variables are correct immediately.
+  // After hydration, useEffect syncs React state to match what the script applied.
   const [theme, setTheme] = useState<Theme>('light')
 
   useEffect(() => {
     const stored = localStorage.getItem('theme') as Theme | null
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const initial: Theme = stored ?? (systemDark ? 'dark' : 'light')
-    setTheme(initial)
-    document.documentElement.setAttribute('data-theme', initial)
+    const resolved: Theme = stored ?? (systemDark ? 'dark' : 'light')
+    setTheme(resolved)
+    document.documentElement.setAttribute('data-theme', resolved)
   }, [])
 
   const toggleTheme = useCallback(() => {

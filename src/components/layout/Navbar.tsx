@@ -6,11 +6,10 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sun, Moon, Menu, X } from 'lucide-react'
 import { useTheme } from '@/components/layout/ThemeProvider'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { createFocusTrap } from '@/lib/focus-trap'
 import { ROUTES } from '@/constants/routes'
 
-// Mock auth state — replaced in Task 16 with real Supabase auth
 const MOCK_USER = {
   name: 'Alex Nguyen',
   tierBadge: { color: '#f59e0b', label: 'Pro' },
@@ -28,9 +27,12 @@ const NAV_LINKS = [
 export function Navbar() {
   const { theme, toggleTheme } = useTheme()
   const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const drawerRef = useRef<HTMLDivElement>(null)
   const trapRef = useRef<ReturnType<typeof createFocusTrap> | null>(null)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     if (drawerOpen && drawerRef.current) {
@@ -51,6 +53,8 @@ export function Navbar() {
   }, [drawerOpen])
 
   const tapStyle = { touchAction: 'manipulation' as const }
+  // Render a neutral icon until mounted to avoid hydration mismatch
+  const ThemeIcon = mounted ? (theme === 'dark' ? Sun : Moon) : Moon
 
   return (
     <>
@@ -66,15 +70,13 @@ export function Navbar() {
 
           <ul className="hidden md:flex md:items-center md:gap-1" role="list">
             {NAV_LINKS.map(({ href, label }) => (
-              <li key={`${href}-${label}`}>
+              <li key={href}>
                 <Link
                   href={href}
                   className={[
                     'inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium transition-colors',
                     'hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
-                    pathname.startsWith(href)
-                      ? 'text-[var(--text-primary)]'
-                      : 'text-[var(--text-secondary)]',
+                    pathname.startsWith(href) ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
                   ].join(' ')}
                   style={tapStyle}
                   aria-current={pathname.startsWith(href) ? 'page' : undefined}
@@ -92,12 +94,12 @@ export function Navbar() {
               className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
               style={tapStyle}
             >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              <ThemeIcon size={20} />
             </button>
 
             {MOCK_AUTHENTICATED ? (
               <>
-                <Badge color={MOCK_USER.tierBadge.color} label={MOCK_USER.tierBadge.label} />
+                <Badge variant="outline" style={{ borderColor: MOCK_USER.tierBadge.color, color: MOCK_USER.tierBadge.color }}>{MOCK_USER.tierBadge.label}</Badge>
                 <Link
                   href={ROUTES.PROFILE}
                   className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
@@ -108,7 +110,7 @@ export function Navbar() {
                 <button
                   className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                   style={tapStyle}
-                  onClick={() => {/* replaced in Task 16 */}}
+                  onClick={() => {}}
                 >
                   Sign out
                 </button>
@@ -140,7 +142,7 @@ export function Navbar() {
               className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
               style={tapStyle}
             >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              <ThemeIcon size={20} />
             </button>
             <button
               onClick={() => setDrawerOpen(true)}
@@ -197,15 +199,13 @@ export function Navbar() {
               <nav className="flex-1 overflow-y-auto px-4 py-4" aria-label="Mobile navigation">
                 <ul className="flex flex-col gap-1" role="list">
                   {NAV_LINKS.map(({ href, label }) => (
-                    <li key={`mobile-${href}-${label}`}>
+                    <li key={`mobile-${href}`}>
                       <Link
                         href={href}
                         className={[
                           'flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium transition-colors',
                           'hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
-                          pathname.startsWith(href)
-                            ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)]'
-                            : 'text-[var(--text-secondary)]',
+                          pathname.startsWith(href) ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
                         ].join(' ')}
                         style={tapStyle}
                         aria-current={pathname.startsWith(href) ? 'page' : undefined}
@@ -221,7 +221,7 @@ export function Navbar() {
                 {MOCK_AUTHENTICATED ? (
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2 px-3 py-2">
-                      <Badge color={MOCK_USER.tierBadge.color} label={MOCK_USER.tierBadge.label} />
+                      <Badge variant="outline" style={{ borderColor: MOCK_USER.tierBadge.color, color: MOCK_USER.tierBadge.color }}>{MOCK_USER.tierBadge.label}</Badge>
                       <span className="text-sm font-medium text-[var(--text-primary)]">{MOCK_USER.name}</span>
                     </div>
                     <Link
@@ -234,7 +234,7 @@ export function Navbar() {
                     <button
                       className="flex min-h-[44px] w-full items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                       style={tapStyle}
-                      onClick={() => {/* replaced in Task 16 */}}
+                      onClick={() => {}}
                     >
                       Sign out
                     </button>
