@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { AlertTriangle } from 'lucide-react'
 
 interface ErrorProps {
   error: Error & { digest?: string }
@@ -15,7 +16,11 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
       <div className="text-center px-6 max-w-md">
-        <div className="text-6xl mb-4">⚠️</div>
+        <div className="flex justify-center mb-4">
+          <div className="w-14 h-14 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] flex items-center justify-center text-[var(--text-secondary)]">
+            <AlertTriangle size={26} />
+          </div>
+        </div>
         <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
           Something went wrong
         </h1>
