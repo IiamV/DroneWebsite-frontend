@@ -1,4 +1,4 @@
-import { Avatar } from '@/components/ui/Avatar'
+import { Avatar } from '@/components/ui/avatar'
 import type { User } from '@/types'
 
 interface ProfileCardProps {
