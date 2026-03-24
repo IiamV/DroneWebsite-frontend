@@ -6,7 +6,8 @@ import { useGLTF, OrbitControls, Environment } from '@react-three/drei'
 import * as THREE from 'three'
 
 function Model({ url }: { url: string }) {
-  const { scene } = useGLTF(url)
+  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
+  const { scene } = useGLTF(`${base}${url}`)
   const pivotRef = useRef<THREE.Group>(null)  // outer group — spins
   const meshRef = useRef<THREE.Group>(null)   // inner group — offset to center
   const { camera } = useThree()
