@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { mockProducts } from '@/mocks/products'
 import { ProductDetail } from '@/components/features/catalog/ProductDetail'
-import { ROUTES } from '@/constants/routes'
+import { ROUTES, localePath } from '@/constants/routes'
 import { setRequestLocale } from 'next-intl/server'
 
 interface Props {
@@ -30,7 +30,7 @@ export default async function ProductDetailPage({ params }: Props) {
         <ol className="flex items-center gap-2 flex-wrap">
           <li>
             <Link
-              href={ROUTES.CATALOG}
+              href={localePath(locale, ROUTES.CATALOG)}
               className="hover:text-[var(--text-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded"
             >
               Catalog

@@ -4,9 +4,10 @@ import { memo } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Cpu } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import type { Course } from '@/types'
-import { ROUTES } from '@/constants/routes'
+import { ROUTES, localePath } from '@/constants/routes'
 
 const DIFFICULTY_COLORS: Record<Course['difficulty'], string> = {
   beginner: '#22c55e',
@@ -19,6 +20,7 @@ interface CourseCardProps {
 }
 
 export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) {
+  const locale = useLocale()
   const durationHours = Math.floor(course.durationMinutes / 60)
   const durationMins = course.durationMinutes % 60
   const durationLabel = durationHours > 0
@@ -32,7 +34,7 @@ export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) 
       transition={{ duration: 0.2 }}
     >
       <Link
-        href={`${ROUTES.COURSES}/${course.slug}`}
+        href={localePath(locale, `${ROUTES.COURSES}/${course.slug}`)}
         className="block rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden hover:border-[var(--accent)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={{ touchAction: 'manipulation' }}
       >

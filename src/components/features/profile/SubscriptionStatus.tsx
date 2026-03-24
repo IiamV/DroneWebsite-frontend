@@ -1,6 +1,9 @@
+'use client'
+
 import { Check } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import type { Subscription, SubscriptionTier } from '@/types'
-import { ROUTES } from '@/constants/routes'
+import { ROUTES, localePath } from '@/constants/routes'
 
 interface SubscriptionStatusProps {
   subscription: Subscription
@@ -15,6 +18,7 @@ const STATUS_STYLES: Record<Subscription['status'], string> = {
 }
 
 export function SubscriptionStatus({ subscription, tier }: SubscriptionStatusProps) {
+  const locale = useLocale()
   const statusLabel = subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)
 
   return (
@@ -59,7 +63,7 @@ export function SubscriptionStatus({ subscription, tier }: SubscriptionStatusPro
       </div>
 
       <a
-        href={ROUTES.SUBSCRIPTION}
+        href={localePath(locale, ROUTES.SUBSCRIPTION)}
         className="inline-block mt-2 text-sm font-medium text-[var(--accent)] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded"
       >
         Manage subscription →

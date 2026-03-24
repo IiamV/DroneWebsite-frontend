@@ -1,29 +1,30 @@
 'use client'
 
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
-import { ROUTES } from '@/constants/routes'
+import { useTranslations, useLocale } from 'next-intl'
+import { ROUTES, localePath } from '@/constants/routes'
 
 export function Footer() {
   const t = useTranslations('footer')
+  const locale = useLocale()
 
   const FOOTER_LINKS = [
     {
       heading: t('platform'),
       links: [
-        { href: ROUTES.COURSES, label: t('courses') },
-        { href: ROUTES.CATALOG, label: t('catalog') },
-        { href: ROUTES.DOWNLOADS, label: t('downloads') },
-        { href: ROUTES.DOCS, label: t('docs') },
+        { href: localePath(locale, ROUTES.COURSES), label: t('courses') },
+        { href: localePath(locale, ROUTES.CATALOG), label: t('catalog') },
+        { href: localePath(locale, ROUTES.DOWNLOADS), label: t('downloads') },
+        { href: localePath(locale, ROUTES.DOCS), label: t('docs') },
       ],
     },
     {
       heading: t('account'),
       links: [
-        { href: ROUTES.AUTH_LOGIN, label: t('signIn') },
-        { href: ROUTES.AUTH_REGISTER, label: t('register') },
-        { href: ROUTES.SUBSCRIPTION, label: t('subscription') },
-        { href: ROUTES.PROFILE, label: t('profile') },
+        { href: localePath(locale, ROUTES.AUTH_LOGIN), label: t('signIn') },
+        { href: localePath(locale, ROUTES.AUTH_REGISTER), label: t('register') },
+        { href: localePath(locale, ROUTES.SUBSCRIPTION), label: t('subscription') },
+        { href: localePath(locale, ROUTES.PROFILE), label: t('profile') },
       ],
     },
   ]
@@ -34,7 +35,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
           <div>
             <Link
-              href={ROUTES.HOME}
+              href={localePath(locale, '')}
               className="text-lg font-bold text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             >
               Flyntic Studio

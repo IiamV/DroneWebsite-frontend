@@ -1,8 +1,11 @@
+'use client'
+
 import Link from 'next/link'
 import { Package } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
-import { ROUTES } from '@/constants/routes'
+import { ROUTES, localePath } from '@/constants/routes'
 
 const CATEGORY_COLORS: Record<Product['category'], string> = {
   frame: '#6366f1',
@@ -31,6 +34,7 @@ interface CompatibilityPanelProps {
 }
 
 export function CompatibilityPanel({ compatibleProducts }: CompatibilityPanelProps) {
+  const locale = useLocale()
   if (compatibleProducts.length === 0) {
     return (
       <section aria-label="Compatible products">
@@ -53,7 +57,7 @@ export function CompatibilityPanel({ compatibleProducts }: CompatibilityPanelPro
         {compatibleProducts.map((p) => (
           <li key={p.id}>
             <Link
-              href={`${ROUTES.CATALOG}/${p.slug}`}
+              href={localePath(locale, `${ROUTES.CATALOG}/${p.slug}`)}
               className="flex items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-3 hover:border-[var(--accent)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] min-h-[44px]"
               style={{ touchAction: 'manipulation' }}
             >

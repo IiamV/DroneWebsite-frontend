@@ -13,3 +13,8 @@ export const ROUTES = {
 } as const
 
 export type Route = (typeof ROUTES)[keyof typeof ROUTES]
+
+// Returns a route prefixed with the active locale, e.g. /en/catalog
+export function localePath(locale: string, route: string) {
+  return `/${locale}${route}`
+}

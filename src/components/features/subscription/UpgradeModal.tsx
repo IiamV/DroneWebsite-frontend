@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button'
 import { TierComparisonTable } from './TierComparisonTable'
 import { mockTiers } from '@/mocks/tiers'
 import { useRouter } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import type { SubscriptionTier } from '@/types'
-import { ROUTES } from '@/constants/routes'
+import { ROUTES, localePath } from '@/constants/routes'
 
 interface UpgradeModalProps {
   open: boolean
@@ -17,11 +18,12 @@ interface UpgradeModalProps {
 
 export function UpgradeModal({ open, onClose, currentTierId, requiredTier }: UpgradeModalProps) {
   const router = useRouter()
+  const locale = useLocale()
 
   function handleSelectTier(tier: SubscriptionTier) {
     if (tier.price === 0) return
     onClose()
-    router.push(`${ROUTES.SUBSCRIPTION_CHECKOUT}/${tier.id}`)
+    router.push(localePath(locale, `${ROUTES.SUBSCRIPTION_CHECKOUT}/${tier.id}`))
   }
 
   return (

@@ -64,7 +64,7 @@ function DroneModel({ scrollY }: DroneModelProps) {
         const material = mesh.material as THREE.MeshStandardMaterial
         if (material.map) material.map = null
         material.metalness = 1.5
-        material.roughness = 1
+        // material.roughness = 1
       }
     })
   }, [scene])

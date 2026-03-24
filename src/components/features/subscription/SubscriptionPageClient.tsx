@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { TierComparisonTable } from './TierComparisonTable'
 import type { SubscriptionTier } from '@/types'
-import { ROUTES } from '@/constants/routes'
+import { ROUTES, localePath } from '@/constants/routes'
 
 interface SubscriptionPageClientProps {
   tiers: SubscriptionTier[]
@@ -17,7 +17,7 @@ export function SubscriptionPageClient({ tiers, locale }: SubscriptionPageClient
 
   function handleSelectTier(tier: SubscriptionTier) {
     if (tier.price === 0) return
-    router.push(`${ROUTES.SUBSCRIPTION_CHECKOUT}/${tier.id}`)
+    router.push(localePath(locale, `${ROUTES.SUBSCRIPTION_CHECKOUT}/${tier.id}`))
   }
 
   return (

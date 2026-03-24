@@ -3,8 +3,8 @@
 import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
-import { ROUTES } from '@/constants/routes'
+import { useTranslations, useLocale } from 'next-intl'
+import { ROUTES, localePath } from '@/constants/routes'
 
 const DroneCanvas = dynamic(
   () => import('./DroneCanvas'),
@@ -27,6 +27,7 @@ const word = {
 
 export function HeroSection() {
   const t = useTranslations('hero')
+  const locale = useLocale()
   const headline = t('headline').split(' ')
 
   return (
@@ -61,13 +62,13 @@ export function HeroSection() {
           transition={{ delay: 0.8, duration: 0.4 }}
         >
           <Link
-            href={ROUTES.SUBSCRIPTION}
+            href={localePath(locale, ROUTES.SUBSCRIPTION)}
             className="inline-flex items-center justify-center min-h-[44px] px-6 py-3 rounded-lg bg-[var(--text-primary)] text-[var(--bg-primary)] font-semibold touch-manipulation hover:opacity-90 transition-opacity"
           >
             {t('cta')}
           </Link>
           <Link
-            href={ROUTES.COURSES}
+            href={localePath(locale, ROUTES.COURSES)}
             className="inline-flex items-center justify-center min-h-[44px] px-6 py-3 rounded-lg border border-[var(--border)] font-semibold touch-manipulation hover:bg-[var(--bg-secondary)] transition-colors"
           >
             {t('browse')}

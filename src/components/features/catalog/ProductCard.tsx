@@ -3,9 +3,10 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import { Package, Plus, Check } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
-import { ROUTES } from '@/constants/routes'
+import { ROUTES, localePath } from '@/constants/routes'
 
 const CATEGORY_COLORS: Record<Product['category'], string> = {
   frame: '#6366f1',
@@ -38,10 +39,11 @@ interface ProductCardProps {
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 
 export const ProductCard = memo(function ProductCard({ product, inBuild = false, onToggleBuild }: ProductCardProps) {
+  const locale = useLocale()
   return (
     <div className="group relative rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden hover:border-[var(--accent)] transition-colors">
       <Link
-        href={`${ROUTES.CATALOG}/${product.slug}`}
+        href={localePath(locale, `${ROUTES.CATALOG}/${product.slug}`)}
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
       >
         <div className="relative h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)] overflow-hidden">

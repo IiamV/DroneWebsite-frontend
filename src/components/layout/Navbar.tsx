@@ -10,7 +10,7 @@ import { useTheme } from '@/components/layout/ThemeProvider'
 import { useAuth } from '@/components/layout/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { createFocusTrap } from '@/lib/focus-trap'
-import { ROUTES } from '@/constants/routes'
+import { ROUTES, localePath } from '@/constants/routes'
 import { routing } from '@/i18n/routing'
 
 const TIER_COLOR = '#f59e0b'
@@ -28,11 +28,11 @@ export function Navbar() {
   const trapRef = useRef<ReturnType<typeof createFocusTrap> | null>(null)
 
   const NAV_LINKS = [
-    { href: ROUTES.COURSES, label: t('courses') },
-    { href: ROUTES.CATALOG, label: t('catalog') },
-    { href: ROUTES.DOWNLOADS, label: t('downloads') },
-    { href: ROUTES.DOCS, label: t('docs') },
-    { href: ROUTES.PRICING, label: t('pricing') },
+    { href: localePath(locale, ROUTES.COURSES), label: t('courses') },
+    { href: localePath(locale, ROUTES.CATALOG), label: t('catalog') },
+    { href: localePath(locale, ROUTES.DOWNLOADS), label: t('downloads') },
+    { href: localePath(locale, ROUTES.DOCS), label: t('docs') },
+    { href: localePath(locale, ROUTES.PRICING), label: t('pricing') },
   ]
 
   useEffect(() => { setMounted(true) }, [])
@@ -70,7 +70,7 @@ export function Navbar() {
     <>
       <Badge variant="outline" style={{ borderColor: TIER_COLOR, color: TIER_COLOR }}>Pro</Badge>
       <Link
-        href={ROUTES.PROFILE}
+        href={localePath(locale, ROUTES.PROFILE)}
         className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={tapStyle}
       >
@@ -87,14 +87,14 @@ export function Navbar() {
   ) : (
     <>
       <Link
-        href={ROUTES.AUTH_LOGIN}
+        href={localePath(locale, ROUTES.AUTH_LOGIN)}
         className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={tapStyle}
       >
         {t('signIn')}
       </Link>
       <Link
-        href={ROUTES.AUTH_REGISTER}
+        href={localePath(locale, ROUTES.AUTH_REGISTER)}
         className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-[var(--bg-primary)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={tapStyle}
       >
@@ -110,7 +110,7 @@ export function Navbar() {
         <span className="text-sm font-medium text-[var(--text-primary)]">{user.name}</span>
       </div>
       <Link
-        href={ROUTES.PROFILE}
+        href={localePath(locale, ROUTES.PROFILE)}
         className="flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={tapStyle}
       >
@@ -127,14 +127,14 @@ export function Navbar() {
   ) : (
     <div className="flex flex-col gap-2">
       <Link
-        href={ROUTES.AUTH_LOGIN}
+        href={localePath(locale, ROUTES.AUTH_LOGIN)}
         className="flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={tapStyle}
       >
         {t('signIn')}
       </Link>
       <Link
-        href={ROUTES.AUTH_REGISTER}
+        href={localePath(locale, ROUTES.AUTH_REGISTER)}
         className="flex min-h-[44px] items-center rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-[var(--bg-primary)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={tapStyle}
       >
@@ -148,7 +148,7 @@ export function Navbar() {
       <header className="sticky top-0 z-40 w-full border-b border-[var(--border)] bg-[var(--bg-primary)]/90 backdrop-blur-sm">
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
           <Link
-            href={ROUTES.HOME}
+            href={localePath(locale, ROUTES.HOME === '/' ? '' : ROUTES.HOME)}
             className="flex min-h-[44px] min-w-[44px] items-center gap-2 font-bold text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             style={tapStyle}
           >
