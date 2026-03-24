@@ -48,6 +48,13 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
           <div className="relative aspect-square rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden">
             {show3D && product.modelUrl ? (
               <Product3DViewer modelUrl={product.modelUrl} productName={product.name} />
+            ) : product.imageUrls[activeImageIndex] ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}${product.imageUrls[activeImageIndex]}`}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[var(--text-secondary)]">
                 <Package size={80} aria-label={product.name} />
@@ -73,12 +80,12 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
           {/* Thumbnails — only in image mode */}
           {!show3D && product.imageUrls.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-1" role="list" aria-label="Product images">
-              {product.imageUrls.map((_, i) => (
+              {product.imageUrls.map((url, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveImageIndex(i)}
                   className={[
-                    'shrink-0 w-16 h-16 rounded border-2 bg-[var(--bg-secondary)] flex items-center justify-center transition-colors',
+                    'shrink-0 w-16 h-16 rounded border-2 bg-[var(--bg-secondary)] overflow-hidden transition-colors',
                     'min-h-[44px] min-w-[44px]',
                     activeImageIndex === i
                       ? 'border-[var(--accent)]'
@@ -88,7 +95,18 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
                   aria-label={`View image ${i + 1}`}
                   aria-pressed={activeImageIndex === i}
                 >
-                  <Package size={18} aria-hidden="true" />
+                  {url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}${url}`}
+                      alt={`${product.name} ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Package size={18} aria-hidden="true" />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>

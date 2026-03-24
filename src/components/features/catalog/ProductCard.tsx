@@ -35,6 +35,8 @@ interface ProductCardProps {
   onToggleBuild?: (id: string) => void
 }
 
+const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
+
 export const ProductCard = memo(function ProductCard({ product, inBuild = false, onToggleBuild }: ProductCardProps) {
   return (
     <div className="group relative rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden hover:border-[var(--accent)] transition-colors">
@@ -42,8 +44,17 @@ export const ProductCard = memo(function ProductCard({ product, inBuild = false,
         href={`${ROUTES.CATALOG}/${product.slug}`}
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
       >
-        <div className="relative h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)]">
-          <Package size={44} aria-hidden="true" />
+        <div className="relative h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)] overflow-hidden">
+          {product.thumbnailUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={`${base}${product.thumbnailUrl}`}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Package size={44} aria-hidden="true" />
+          )}
           <div className="absolute inset-0 flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" aria-hidden="true">
             <p className="product-card-summary w-full rounded-md px-2 py-1.5 text-xs text-white leading-snug">
               {product.shortSummary}

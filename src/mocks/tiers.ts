@@ -90,7 +90,7 @@ export const mockTiers: SubscriptionTier[] = [
     billingCycle: 'monthly',
     features: [
       'Everything in Team',
-      '50–100 student seats',
+      '50 student seats',
       'Instructor dashboard & analytics',
       'Custom course assignments',
       'LMS integration support',
@@ -99,7 +99,7 @@ export const mockTiers: SubscriptionTier[] = [
     ],
     featuresVi: [
       'Tất cả tính năng của Team',
-      '50–100 chỗ học viên',
+      '50 chỗ học viên',
       'Bảng điều khiển & phân tích cho giảng viên',
       'Phân công khóa học tùy chỉnh',
       'Tích hợp LMS',
