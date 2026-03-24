@@ -2,13 +2,15 @@ import { mockDocs } from '@/mocks/docs'
 import { DocSidebar } from '@/components/features/docs/DocSidebar'
 import { DocContent } from '@/components/features/docs/DocContent'
 import { DocBreadcrumb } from '@/components/features/docs/DocBreadcrumb'
+import { setRequestLocale } from 'next-intl/server'
 
 interface DocsPageProps {
-  params: { slug: string[] }
+  params: Promise<{ locale: string; slug: string[] }>
 }
 
-export default function DocsPage({ params }: DocsPageProps) {
-  const { slug } = params
+export default async function DocsPage({ params }: DocsPageProps) {
+  const { locale, slug } = await params
+  setRequestLocale(locale)
   const slugPath = slug.join('/')
   const doc = mockDocs.find((d) => d.slug.join('/') === slugPath)
 

@@ -3,8 +3,15 @@ import { mockTiers } from '@/mocks/tiers'
 import { ProfileCard } from '@/components/features/profile/ProfileCard'
 import { TierBadge } from '@/components/features/profile/TierBadge'
 import { SubscriptionStatus } from '@/components/features/profile/SubscriptionStatus'
+import { setRequestLocale } from 'next-intl/server'
 
-export default function ProfilePage() {
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const tier = mockTiers.find((t) => t.id === mockSubscription.tierId) ?? mockTiers[0]
 
   return (

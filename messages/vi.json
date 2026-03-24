@@ -64,5 +64,15 @@
     "passwordPlaceholder": "••••••••",
     "namePlaceholder": "Họ và tên",
     "minPassword": "Tối thiểu 8 ký tự"
+  },
+  "pricing": {
+    "title": "Chọn gói của bạn",
+    "subtitle": "Mở khóa công cụ mô phỏng, khóa học nâng cao và phần mềm tải về với gói trả phí.",
+    "free": "Miễn phí",
+    "perMonth": "/tháng",
+    "mostPopular": "Phổ biến nhất",
+    "currentPlan": "Gói hiện tại",
+    "subscribe": "Đăng ký",
+    "getStarted": "Bắt đầu"
   }
 }

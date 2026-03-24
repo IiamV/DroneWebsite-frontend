@@ -24,8 +24,10 @@ export interface SubscriptionTier {
   id: string
   name: string
   price: number
+  priceVnd: number
   billingCycle: 'monthly' | 'yearly'
   features: string[]
+  featuresVi: string[]
   downloadAccess: boolean
   courseAccess: 'none' | 'basic' | 'full'
   simulatorAccess: boolean

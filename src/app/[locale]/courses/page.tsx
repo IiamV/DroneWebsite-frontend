@@ -1,7 +1,14 @@
 import { mockCourses } from '@/mocks/courses'
 import { CourseGrid } from '@/components/features/courses/CourseGrid'
+import { setRequestLocale } from 'next-intl/server'
 
-export default function CoursesPage() {
+export default async function CoursesPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
   return (
     <main className="max-w-6xl mx-auto px-4 py-12">
       <div className="mb-8">

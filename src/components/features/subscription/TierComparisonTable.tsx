@@ -1,6 +1,7 @@
 'use client'
 
 import { Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { SubscriptionTier } from '@/types'
@@ -9,9 +10,21 @@ interface TierComparisonTableProps {
   tiers: SubscriptionTier[]
   currentTierId?: string
   onSelectTier?: (tier: SubscriptionTier) => void
+  locale?: string
 }
 
-export function TierComparisonTable({ tiers, currentTierId, onSelectTier }: TierComparisonTableProps) {
+export function TierComparisonTable({ tiers, currentTierId, onSelectTier, locale }: TierComparisonTableProps) {
+  const t = useTranslations('pricing')
+  const isVi = locale === 'vi'
+
+  function formatPrice(tier: SubscriptionTier) {
+    if (tier.price === 0) return t('free')
+    if (isVi) {
+      return new Intl.NumberFormat('vi-VN').format(tier.priceVnd) + '₫'
+    }
+    return `$${tier.price.toFixed(2)}`
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
       {tiers.map((tier) => {
@@ -20,7 +33,6 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier }: Tier
 
         return (
           <div key={tier.id} className={isPro ? 'relative p-[2px] rounded-xl rainbow-border' : ''}>
-            {/* Rainbow animated border for Pro */}
             {isPro && (
               <style>{`
                 @keyframes rainbow-spin {
@@ -49,7 +61,7 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier }: Tier
               {isPro && (
                 <div className="text-center mb-3">
                   <span className="text-xs font-semibold uppercase tracking-widest bg-gradient-to-r from-pink-500 via-yellow-400 to-purple-500 bg-clip-text text-transparent">
-                    Most Popular
+                    {t('mostPopular')}
                   </span>
                 </div>
               )}
@@ -62,22 +74,18 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier }: Tier
               </div>
 
               <div className="mb-4">
-                {tier.price === 0 ? (
-                  <span className="text-3xl font-extrabold text-[var(--text-primary)]">Free</span>
-                ) : (
-                  <>
-                    <span className="text-3xl font-extrabold text-[var(--text-primary)]">
-                      ${tier.price.toFixed(2)}
-                    </span>
-                    <span className="text-sm text-[var(--text-secondary)] ml-1">
-                      /{tier.billingCycle === 'monthly' ? 'mo' : 'yr'}
-                    </span>
-                  </>
+                <span className="text-3xl font-extrabold text-[var(--text-primary)]">
+                  {formatPrice(tier)}
+                </span>
+                {tier.price > 0 && (
+                  <span className="text-sm text-[var(--text-secondary)] ml-1">
+                    {t('perMonth')}
+                  </span>
                 )}
               </div>
 
               <ul className="flex-1 space-y-2 mb-6">
-                {tier.features.map((feature) => (
+                {(isVi ? tier.featuresVi : tier.features).map((feature) => (
                   <li key={feature} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
                     <Check size={14} className="mt-0.5 text-green-500 shrink-0" aria-hidden="true" />
                     {feature}
@@ -92,7 +100,7 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier }: Tier
                   onClick={() => onSelectTier(tier)}
                   className="w-full"
                 >
-                  {isCurrent ? 'Current plan' : tier.price === 0 ? 'Get started' : 'Subscribe'}
+                  {isCurrent ? t('currentPlan') : tier.price === 0 ? t('getStarted') : t('subscribe')}
                 </Button>
               )}
             </div>

@@ -1,10 +1,17 @@
 import { LoginForm } from '@/components/features/auth/LoginForm'
+import { setRequestLocale } from 'next-intl/server'
 
 export const metadata = {
   title: 'Sign In — Drone Simulation Platform',
 }
 
-export default function LoginPage() {
+export default async function LoginPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
+import { setRequestLocale } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import '../globals.css'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
@@ -36,6 +37,9 @@ export default async function LocaleLayout({
   if (!routing.locales.includes(locale as 'en' | 'vi')) {
     notFound()
   }
+
+  // Required for next-intl static rendering (no headers read)
+  setRequestLocale(locale)
 
   // Load messages directly from JSON — no headers read, fully static
   const messages = (await import(`../../../messages/${locale}.json`)).default

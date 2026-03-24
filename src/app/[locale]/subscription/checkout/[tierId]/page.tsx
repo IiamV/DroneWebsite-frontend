@@ -1,13 +1,16 @@
 import { mockTiers } from '@/mocks/tiers'
 import { VNPayCheckoutForm } from '@/components/features/subscription/VNPayCheckoutForm'
 import { Badge } from '@/components/ui/badge'
+import { setRequestLocale } from 'next-intl/server'
 
 interface CheckoutPageProps {
-  params: { tierId: string }
+  params: Promise<{ locale: string; tierId: string }>
 }
 
-export default function CheckoutPage({ params }: CheckoutPageProps) {
-  const tier = mockTiers.find((t) => t.id === params.tierId)
+export default async function CheckoutPage({ params }: CheckoutPageProps) {
+  const { locale, tierId } = await params
+  setRequestLocale(locale)
+  const tier = mockTiers.find((t) => t.id === tierId)
 
   if (!tier || tier.price === 0) {
     return (

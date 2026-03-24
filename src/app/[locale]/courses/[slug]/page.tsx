@@ -2,13 +2,16 @@ import { mockCourses } from '@/mocks/courses'
 import { mockSubscription } from '@/mocks/user'
 import { mockTiers } from '@/mocks/tiers'
 import { CourseDetailClient } from '@/components/features/courses/CourseDetailClient'
+import { setRequestLocale } from 'next-intl/server'
 
 interface CoursePageProps {
-  params: { slug: string }
+  params: Promise<{ locale: string; slug: string }>
 }
 
-export default function CoursePage({ params }: CoursePageProps) {
-  const course = mockCourses.find((c) => c.slug === params.slug)
+export default async function CoursePage({ params }: CoursePageProps) {
+  const { locale, slug } = await params
+  setRequestLocale(locale)
+  const course = mockCourses.find((c) => c.slug === slug)
 
   if (!course) {
     return (

@@ -1,7 +1,14 @@
 import { mockProducts } from '@/mocks/products'
 import { ProductGrid } from '@/components/features/catalog/ProductGrid'
+import { setRequestLocale } from 'next-intl/server'
 
-export default function CatalogPage() {
+export default async function CatalogPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
   return (
     <main className="max-w-7xl mx-auto px-4 py-12">
       <div className="mb-8">

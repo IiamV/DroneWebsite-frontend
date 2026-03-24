@@ -2,8 +2,15 @@ import { mockDocs } from '@/mocks/docs'
 import { DocSidebar } from '@/components/features/docs/DocSidebar'
 import { DocContent } from '@/components/features/docs/DocContent'
 import { DocBreadcrumb } from '@/components/features/docs/DocBreadcrumb'
+import { setRequestLocale } from 'next-intl/server'
 
-export default function DocsIndexPage() {
+export default async function DocsIndexPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
   // Render the first doc (getting-started) directly at /docs
   const doc = mockDocs[0]
 

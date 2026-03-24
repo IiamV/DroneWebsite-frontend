@@ -37,7 +37,7 @@ export function Footer() {
               href={ROUTES.HOME}
               className="text-lg font-bold text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             >
-              DroneSimPlatform
+              Flyntic Studio
             </Link>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">{t('tagline')}</p>
           </div>

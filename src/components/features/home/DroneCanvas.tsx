@@ -60,15 +60,14 @@ function DroneModel({ scrollY }: DroneModelProps) {
   useEffect(() => {
     scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
-        const mesh = child as THREE.Mesh;
-        const material = mesh.material as THREE.MeshStandardMaterial;
-
-        if (material.map) material.map = null;         
-        material.metalness = 1.5; 
-        material.roughness = 1;
+        const mesh = child as THREE.Mesh
+        const material = mesh.material as THREE.MeshStandardMaterial
+        if (material.map) material.map = null
+        material.metalness = 1.5
+        material.roughness = 1
       }
-    });
-  }, [scene]);
+    })
+  }, [scene])
 
   useEffect(() => {
     // Access the specific "hover" action and play it

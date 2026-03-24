@@ -1,10 +1,17 @@
 import { RegisterForm } from '@/components/features/auth/RegisterForm'
+import { setRequestLocale } from 'next-intl/server'
 
 export const metadata = {
   title: 'Create Account — Drone Simulation Platform',
 }
 
-export default function RegisterPage() {
+export default async function RegisterPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">

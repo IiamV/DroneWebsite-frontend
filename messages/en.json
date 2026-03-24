@@ -64,5 +64,15 @@
     "passwordPlaceholder": "••••••••",
     "namePlaceholder": "Your name",
     "minPassword": "Min. 8 characters"
+  },
+  "pricing": {
+    "title": "Choose your plan",
+    "subtitle": "Unlock simulation tools, advanced courses, and downloadable software with a paid subscription.",
+    "free": "Free",
+    "perMonth": "/mo",
+    "mostPopular": "Most Popular",
+    "currentPlan": "Current plan",
+    "subscribe": "Subscribe",
+    "getStarted": "Get started"
   }
 }
