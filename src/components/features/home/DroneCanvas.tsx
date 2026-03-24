@@ -6,7 +6,6 @@ import { useGLTF, useAnimations } from '@react-three/drei'
 import * as THREE from 'three'
 import Image from 'next/image'
 import { animateDrone } from '@/lib/animation'
-import { groupEnd } from 'console'
 
 function supportsWebGL(): boolean {
   try {
