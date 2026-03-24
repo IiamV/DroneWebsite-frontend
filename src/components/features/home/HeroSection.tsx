@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { ROUTES } from '@/constants/routes'
 
 const DroneCanvas = dynamic(
@@ -11,18 +12,12 @@ const DroneCanvas = dynamic(
 )
 
 function DronePlaceholder() {
-  return (
-    <div className="w-full h-full bg-[var(--bg-secondary)] rounded-xl animate-pulse" />
-  )
+  return <div className="w-full h-full bg-[var(--bg-secondary)] rounded-xl animate-pulse" />
 }
-
-const headline = 'Master Drone Technology From the Ground Up'.split(' ')
 
 const container = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08 },
-  },
+  show: { transition: { staggerChildren: 0.06 } },
 }
 
 const word = {
@@ -31,6 +26,9 @@ const word = {
 }
 
 export function HeroSection() {
+  const t = useTranslations('hero')
+  const headline = t('headline').split(' ')
+
   return (
     <section className="relative flex flex-col-reverse md:flex-row items-center gap-8 px-6 py-16 md:py-24 max-w-7xl mx-auto">
       {/* Text */}
@@ -40,12 +38,10 @@ export function HeroSection() {
           variants={container}
           initial="hidden"
           animate="show"
-          aria-label={headline.join(' ')}
+          aria-label={t('headline')}
         >
           {headline.map((w, i) => (
-            <motion.span key={i} variants={word}>
-              {w}
-            </motion.span>
+            <motion.span key={i} variants={word}>{w}</motion.span>
           ))}
         </motion.h1>
 
@@ -55,8 +51,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.4 }}
         >
-          Explore interactive 3D simulations, browse drone components, and unlock
-          premium courses — all in one platform.
+          {t('subheadline')}
         </motion.p>
 
         <motion.div
@@ -67,15 +62,15 @@ export function HeroSection() {
         >
           <Link
             href={ROUTES.SUBSCRIPTION}
-            className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-6 py-3 rounded-lg bg-[var(--text-primary)] text-[var(--bg-primary)] font-semibold touch-manipulation hover:opacity-90 transition-opacity"
+            className="inline-flex items-center justify-center min-h-[44px] px-6 py-3 rounded-lg bg-[var(--text-primary)] text-[var(--bg-primary)] font-semibold touch-manipulation hover:opacity-90 transition-opacity"
           >
-            Get Started
+            {t('cta')}
           </Link>
           <Link
             href={ROUTES.COURSES}
-            className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-6 py-3 rounded-lg border border-[var(--border)] font-semibold touch-manipulation hover:bg-[var(--bg-secondary)] transition-colors"
+            className="inline-flex items-center justify-center min-h-[44px] px-6 py-3 rounded-lg border border-[var(--border)] font-semibold touch-manipulation hover:bg-[var(--bg-secondary)] transition-colors"
           >
-            Browse Courses
+            {t('browse')}
           </Link>
         </motion.div>
       </div>

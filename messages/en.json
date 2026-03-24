@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "courses": "Courses",
+    "catalog": "Catalog",
+    "downloads": "Downloads",
+    "docs": "Docs",
+    "pricing": "Pricing",
+    "signIn": "Sign in",
+    "getStarted": "Get started",
+    "signOut": "Sign out",
+    "profile": "Profile",
+    "menu": "Menu",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu"
+  },
+  "hero": {
+    "headline": "Master Drone Technology From the Ground Up",
+    "subheadline": "Explore interactive 3D simulations, browse drone components, and unlock premium courses — all in one platform.",
+    "cta": "Get Started",
+    "browse": "Browse Courses"
+  },
+  "features": {
+    "title": "Everything you need to build and fly",
+    "sim": "3D Simulation",
+    "simDesc": "Visualize drone builds in real-time 3D before you buy a single part.",
+    "courses": "Expert Courses",
+    "coursesDesc": "From beginner fundamentals to advanced PID tuning — learn at your own pace.",
+    "catalog": "Component Catalog",
+    "catalogDesc": "Browse motors, frames, ESCs, and more with full compatibility filtering.",
+    "downloads": "IDE Downloads",
+    "downloadsDesc": "Download the Drone Application by Insai to simulate and configure drones locally."
+  },
+  "cta": {
+    "title": "Ready to start building?",
+    "subtitle": "Join thousands of pilots learning drone technology on our platform.",
+    "button": "Get Started Free"
+  },
+  "footer": {
+    "tagline": "Learn, simulate, and build drone configurations.",
+    "platform": "Platform",
+    "account": "Account",
+    "rights": "All rights reserved.",
+    "courses": "Courses",
+    "catalog": "Product Catalog",
+    "downloads": "Downloads",
+    "docs": "Documentation",
+    "signIn": "Sign in",
+    "register": "Register",
+    "subscription": "Subscription",
+    "profile": "Profile"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "signIn": "Sign in",
+    "signingIn": "Signing in…",
+    "createAccount": "Create account",
+    "creatingAccount": "Creating account…",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "register": "Register",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "••••••••",
+    "namePlaceholder": "Your name",
+    "minPassword": "Min. 8 characters"
+  }
+}

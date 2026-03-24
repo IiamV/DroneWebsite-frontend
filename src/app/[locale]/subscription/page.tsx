@@ -3,7 +3,7 @@ import { SubscriptionPageClient } from '@/components/features/subscription/Subsc
 
 export default function SubscriptionPage() {
   return (
-    <main className="max-w-5xl mx-auto px-4 py-12">
+    <main className="max-w-7xl mx-auto px-4 py-12">
       <div className="mb-10 text-center">
         <h1 className="text-3xl font-extrabold text-[var(--text-primary)] mb-3">
           Choose your plan

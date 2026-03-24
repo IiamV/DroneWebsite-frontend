@@ -2,35 +2,38 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sun, Moon, Menu, X } from 'lucide-react'
+import { Sun, Moon, Menu, X, Globe } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
 import { useTheme } from '@/components/layout/ThemeProvider'
+import { useAuth } from '@/components/layout/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { createFocusTrap } from '@/lib/focus-trap'
 import { ROUTES } from '@/constants/routes'
+import { routing } from '@/i18n/routing'
 
-const MOCK_USER = {
-  name: 'Alex Nguyen',
-  tierBadge: { color: '#f59e0b', label: 'Pro' },
-}
-const MOCK_AUTHENTICATED = true
-
-const NAV_LINKS = [
-  { href: ROUTES.COURSES, label: 'Courses' },
-  { href: ROUTES.CATALOG, label: 'Catalog' },
-  { href: ROUTES.DOWNLOADS, label: 'Downloads' },
-  { href: ROUTES.DOCS, label: 'Docs' },
-  { href: ROUTES.PRICING, label: 'Pricing' },
-]
+const TIER_COLOR = '#f59e0b'
 
 export function Navbar() {
+  const t = useTranslations('nav')
+  const locale = useLocale()
   const { theme, toggleTheme } = useTheme()
+  const { user, logout } = useAuth()
   const pathname = usePathname()
+  const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const drawerRef = useRef<HTMLDivElement>(null)
   const trapRef = useRef<ReturnType<typeof createFocusTrap> | null>(null)
+
+  const NAV_LINKS = [
+    { href: ROUTES.COURSES, label: t('courses') },
+    { href: ROUTES.CATALOG, label: t('catalog') },
+    { href: ROUTES.DOWNLOADS, label: t('downloads') },
+    { href: ROUTES.DOCS, label: t('docs') },
+    { href: ROUTES.PRICING, label: t('pricing') },
+  ]
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -52,9 +55,93 @@ export function Navbar() {
     return () => { document.body.style.overflow = '' }
   }, [drawerOpen])
 
+  function switchLocale() {
+    const next = locale === 'en' ? 'vi' : 'en'
+    // Replace the locale prefix in the current path
+    const segments = pathname.split('/')
+    segments[1] = next
+    router.push(segments.join('/') || '/')
+  }
+
   const tapStyle = { touchAction: 'manipulation' as const }
-  // Render a neutral icon until mounted to avoid hydration mismatch
   const ThemeIcon = mounted ? (theme === 'dark' ? Sun : Moon) : Moon
+
+  const AuthDesktop = user ? (
+    <>
+      <Badge variant="outline" style={{ borderColor: TIER_COLOR, color: TIER_COLOR }}>Pro</Badge>
+      <Link
+        href={ROUTES.PROFILE}
+        className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        style={tapStyle}
+      >
+        {user.name}
+      </Link>
+      <button
+        className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        style={tapStyle}
+        onClick={logout}
+      >
+        {t('signOut')}
+      </button>
+    </>
+  ) : (
+    <>
+      <Link
+        href={ROUTES.AUTH_LOGIN}
+        className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        style={tapStyle}
+      >
+        {t('signIn')}
+      </Link>
+      <Link
+        href={ROUTES.AUTH_REGISTER}
+        className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-[var(--bg-primary)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        style={tapStyle}
+      >
+        {t('getStarted')}
+      </Link>
+    </>
+  )
+
+  const AuthMobile = user ? (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2 px-3 py-2">
+        <Badge variant="outline" style={{ borderColor: TIER_COLOR, color: TIER_COLOR }}>Pro</Badge>
+        <span className="text-sm font-medium text-[var(--text-primary)]">{user.name}</span>
+      </div>
+      <Link
+        href={ROUTES.PROFILE}
+        className="flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        style={tapStyle}
+      >
+        {t('profile')}
+      </Link>
+      <button
+        className="flex min-h-[44px] w-full items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        style={tapStyle}
+        onClick={logout}
+      >
+        {t('signOut')}
+      </button>
+    </div>
+  ) : (
+    <div className="flex flex-col gap-2">
+      <Link
+        href={ROUTES.AUTH_LOGIN}
+        className="flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        style={tapStyle}
+      >
+        {t('signIn')}
+      </Link>
+      <Link
+        href={ROUTES.AUTH_REGISTER}
+        className="flex min-h-[44px] items-center rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-[var(--bg-primary)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        style={tapStyle}
+      >
+        {t('getStarted')}
+      </Link>
+    </div>
+  )
 
   return (
     <>
@@ -65,7 +152,7 @@ export function Navbar() {
             className="flex min-h-[44px] min-w-[44px] items-center gap-2 font-bold text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             style={tapStyle}
           >
-            <span className="text-lg tracking-tight">DroneSimPlatform</span>
+            <span className="text-lg tracking-tight">Flyntic Studio</span>
           </Link>
 
           <ul className="hidden md:flex md:items-center md:gap-1" role="list">
@@ -76,10 +163,10 @@ export function Navbar() {
                   className={[
                     'inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium transition-colors',
                     'hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
-                    pathname.startsWith(href) ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
+                    pathname.includes(href) ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
                   ].join(' ')}
                   style={tapStyle}
-                  aria-current={pathname.startsWith(href) ? 'page' : undefined}
+                  aria-current={pathname.includes(href) ? 'page' : undefined}
                 >
                   {label}
                 </Link>
@@ -88,6 +175,20 @@ export function Navbar() {
           </ul>
 
           <div className="hidden md:flex md:items-center md:gap-2">
+            {/* Language switcher */}
+            <button
+              onClick={switchLocale}
+              aria-label={`Switch to ${locale === 'en' ? 'Vietnamese' : 'English'}`}
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-md px-2 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              style={tapStyle}
+            >
+              <Globe size={16} />
+              {routing.locales.map((l) => (
+                <span key={l} className={l === locale ? 'text-[var(--text-primary)] font-semibold' : ''}>
+                  {l.toUpperCase()}
+                </span>
+              )).reduce((acc, el, i) => i === 0 ? [el] : [...acc, <span key={`sep-${i}`} className="opacity-30">/</span>, el], [] as React.ReactNode[])}
+            </button>
             <button
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
@@ -96,46 +197,18 @@ export function Navbar() {
             >
               <ThemeIcon size={20} />
             </button>
-
-            {MOCK_AUTHENTICATED ? (
-              <>
-                <Badge variant="outline" style={{ borderColor: MOCK_USER.tierBadge.color, color: MOCK_USER.tierBadge.color }}>{MOCK_USER.tierBadge.label}</Badge>
-                <Link
-                  href={ROUTES.PROFILE}
-                  className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                  style={tapStyle}
-                >
-                  {MOCK_USER.name}
-                </Link>
-                <button
-                  className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                  style={tapStyle}
-                  onClick={() => {}}
-                >
-                  Sign out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  href={ROUTES.AUTH_LOGIN}
-                  className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                  style={tapStyle}
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href={ROUTES.AUTH_REGISTER}
-                  className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-[var(--bg-primary)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                  style={tapStyle}
-                >
-                  Get started
-                </Link>
-              </>
-            )}
+            {AuthDesktop}
           </div>
 
           <div className="flex items-center gap-1 md:hidden">
+            <button
+              onClick={switchLocale}
+              aria-label={`Switch to ${locale === 'en' ? 'Vietnamese' : 'English'}`}
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              style={tapStyle}
+            >
+              <Globe size={16} />
+            </button>
             <button
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
@@ -146,7 +219,7 @@ export function Navbar() {
             </button>
             <button
               onClick={() => setDrawerOpen(true)}
-              aria-label="Open navigation menu"
+              aria-label={t('openMenu')}
               aria-expanded={drawerOpen}
               aria-controls="mobile-drawer"
               className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
@@ -177,7 +250,7 @@ export function Navbar() {
               ref={drawerRef}
               role="dialog"
               aria-modal="true"
-              aria-label="Navigation menu"
+              aria-label={t('menu')}
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
@@ -185,17 +258,16 @@ export function Navbar() {
               className="fixed inset-y-0 right-0 z-50 flex w-72 flex-col bg-[var(--bg-primary)] shadow-xl md:hidden"
             >
               <div className="flex h-16 items-center justify-between border-b border-[var(--border)] px-4">
-                <span className="font-bold text-[var(--text-primary)]">Menu</span>
+                <span className="font-bold text-[var(--text-primary)]">{t('menu')}</span>
                 <button
                   onClick={() => setDrawerOpen(false)}
-                  aria-label="Close navigation menu"
+                  aria-label={t('closeMenu')}
                   className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                   style={tapStyle}
                 >
                   <X size={24} />
                 </button>
               </div>
-
               <nav className="flex-1 overflow-y-auto px-4 py-4" aria-label="Mobile navigation">
                 <ul className="flex flex-col gap-1" role="list">
                   {NAV_LINKS.map(({ href, label }) => (
@@ -205,10 +277,10 @@ export function Navbar() {
                         className={[
                           'flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium transition-colors',
                           'hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
-                          pathname.startsWith(href) ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
+                          pathname.includes(href) ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
                         ].join(' ')}
                         style={tapStyle}
-                        aria-current={pathname.startsWith(href) ? 'page' : undefined}
+                        aria-current={pathname.includes(href) ? 'page' : undefined}
                       >
                         {label}
                       </Link>
@@ -216,47 +288,8 @@ export function Navbar() {
                   ))}
                 </ul>
               </nav>
-
               <div className="border-t border-[var(--border)] px-4 py-4">
-                {MOCK_AUTHENTICATED ? (
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 px-3 py-2">
-                      <Badge variant="outline" style={{ borderColor: MOCK_USER.tierBadge.color, color: MOCK_USER.tierBadge.color }}>{MOCK_USER.tierBadge.label}</Badge>
-                      <span className="text-sm font-medium text-[var(--text-primary)]">{MOCK_USER.name}</span>
-                    </div>
-                    <Link
-                      href={ROUTES.PROFILE}
-                      className="flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                      style={tapStyle}
-                    >
-                      Profile
-                    </Link>
-                    <button
-                      className="flex min-h-[44px] w-full items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                      style={tapStyle}
-                      onClick={() => {}}
-                    >
-                      Sign out
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <Link
-                      href={ROUTES.AUTH_LOGIN}
-                      className="flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                      style={tapStyle}
-                    >
-                      Sign in
-                    </Link>
-                    <Link
-                      href={ROUTES.AUTH_REGISTER}
-                      className="flex min-h-[44px] items-center rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-[var(--bg-primary)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                      style={tapStyle}
-                    >
-                      Get started
-                    </Link>
-                  </div>
-                )}
+                {AuthMobile}
               </div>
             </motion.div>
           </>

@@ -72,6 +72,7 @@ export interface Product {
   compatibleWith: string[]
   tags: string[]
   affiliateUrl: string | null
+  modelUrl: string | null
   createdAt: Date
 }
 

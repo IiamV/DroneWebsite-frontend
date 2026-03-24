@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Package, Check } from 'lucide-react'
+import { Package, Check, Box, Image as ImageIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { CompatibilityPanel } from './CompatibilityPanel'
+import { Product3DViewer } from './Product3DViewer'
 import type { Product } from '@/types'
 
 const CATEGORY_COLORS: Record<Product['category'], string> = {
@@ -35,6 +36,7 @@ interface ProductDetailProps {
 
 export function ProductDetail({ product, compatibleProducts }: ProductDetailProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const [show3D, setShow3D] = useState(false)
 
   return (
     <div className="space-y-12">
@@ -42,13 +44,34 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Image gallery */}
         <div className="lg:w-1/2 space-y-3">
-          {/* Main image */}
-          <div className="aspect-square rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center overflow-hidden text-[var(--text-secondary)]">
-            <Package size={80} aria-label={product.name} />
+          {/* Main image / 3D viewer */}
+          <div className="relative aspect-square rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden">
+            {show3D && product.modelUrl ? (
+              <Product3DViewer modelUrl={product.modelUrl} productName={product.name} />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[var(--text-secondary)]">
+                <Package size={80} aria-label={product.name} />
+              </div>
+            )}
+
+            {/* Toggle button — only shown if product has a 3D model */}
+            {product.modelUrl && (
+              <button
+                onClick={() => setShow3D((v) => !v)}
+                className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[var(--bg-primary)]/80 backdrop-blur border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-primary)] transition-colors"
+                aria-label={show3D ? 'Switch to image view' : 'Switch to 3D view'}
+              >
+                {show3D ? (
+                  <><ImageIcon size={14} aria-hidden="true" /> Image</>
+                ) : (
+                  <><Box size={14} aria-hidden="true" /> 3D View</>
+                )}
+              </button>
+            )}
           </div>
 
-          {/* Thumbnails */}
-          {product.imageUrls.length > 1 && (
+          {/* Thumbnails — only in image mode */}
+          {!show3D && product.imageUrls.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-1" role="list" aria-label="Product images">
               {product.imageUrls.map((_, i) => (
                 <button

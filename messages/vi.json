@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "courses": "Khóa học",
+    "catalog": "Danh mục",
+    "downloads": "Tải xuống",
+    "docs": "Tài liệu",
+    "pricing": "Bảng giá",
+    "signIn": "Đăng nhập",
+    "getStarted": "Bắt đầu",
+    "signOut": "Đăng xuất",
+    "profile": "Hồ sơ",
+    "menu": "Menu",
+    "openMenu": "Mở menu điều hướng",
+    "closeMenu": "Đóng menu điều hướng"
+  },
+  "hero": {
+    "headline": "Làm chủ công nghệ drone từ cơ bản đến nâng cao",
+    "subheadline": "Khám phá mô phỏng 3D tương tác, duyệt linh kiện drone và mở khóa các khóa học cao cấp — tất cả trong một nền tảng.",
+    "cta": "Bắt đầu ngay",
+    "browse": "Xem khóa học"
+  },
+  "features": {
+    "title": "Mọi thứ bạn cần để xây dựng và bay",
+    "sim": "Mô phỏng 3D",
+    "simDesc": "Trực quan hóa cấu hình drone theo thời gian thực trước khi mua bất kỳ linh kiện nào.",
+    "courses": "Khóa học chuyên sâu",
+    "coursesDesc": "Từ kiến thức cơ bản đến tinh chỉnh PID nâng cao — học theo tốc độ của bạn.",
+    "catalog": "Danh mục linh kiện",
+    "catalogDesc": "Duyệt động cơ, khung, ESC và nhiều hơn nữa với bộ lọc tương thích đầy đủ.",
+    "downloads": "Tải IDE",
+    "downloadsDesc": "Tải Drone Application by Insai để mô phỏng và cấu hình drone trên máy tính."
+  },
+  "cta": {
+    "title": "Sẵn sàng bắt đầu xây dựng?",
+    "subtitle": "Tham gia cùng hàng nghìn phi công đang học công nghệ drone trên nền tảng của chúng tôi.",
+    "button": "Bắt đầu miễn phí"
+  },
+  "footer": {
+    "tagline": "Học, mô phỏng và xây dựng cấu hình drone.",
+    "platform": "Nền tảng",
+    "account": "Tài khoản",
+    "rights": "Bảo lưu mọi quyền.",
+    "courses": "Khóa học",
+    "catalog": "Danh mục sản phẩm",
+    "downloads": "Tải xuống",
+    "docs": "Tài liệu",
+    "signIn": "Đăng nhập",
+    "register": "Đăng ký",
+    "subscription": "Đăng ký gói",
+    "profile": "Hồ sơ"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Mật khẩu",
+    "name": "Họ tên",
+    "signIn": "Đăng nhập",
+    "signingIn": "Đang đăng nhập…",
+    "createAccount": "Tạo tài khoản",
+    "creatingAccount": "Đang tạo tài khoản…",
+    "noAccount": "Chưa có tài khoản?",
+    "hasAccount": "Đã có tài khoản?",
+    "register": "Đăng ký",
+    "emailPlaceholder": "ban@example.com",
+    "passwordPlaceholder": "••••••••",
+    "namePlaceholder": "Họ và tên",
+    "minPassword": "Tối thiểu 8 ký tự"
+  }
+}

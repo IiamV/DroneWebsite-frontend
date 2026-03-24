@@ -2,10 +2,11 @@
 
 import { useRef, useEffect, useState, useMemo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { useGLTF } from '@react-three/drei'
+import { useGLTF, useAnimations } from '@react-three/drei'
 import * as THREE from 'three'
 import Image from 'next/image'
 import { animateDrone } from '@/lib/animation'
+import { groupEnd } from 'console'
 
 function supportsWebGL(): boolean {
   try {
@@ -52,17 +53,45 @@ interface DroneModelProps {
 function DroneModel({ scrollY }: DroneModelProps) {
   const groupRef = useRef<THREE.Group>(null)
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
-  const { scene } = useGLTF(`${basePath}/models/drone.glb`)
+  const gltf = useGLTF(`${basePath}/models/drone.glb`)
+  const { scene, animations } = gltf
+  const { actions } = useAnimations(animations, groupRef)
   const { clock } = useThree()
+
+  useEffect(() => {
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const material = mesh.material as THREE.MeshStandardMaterial;
+
+        if (material.map) material.map = null;         
+        material.metalness = 1.5; 
+        material.roughness = 1;
+      }
+    });
+  }, [scene]);
+
+  useEffect(() => {
+    // Access the specific "hover" action and play it
+    const hoverAction = actions['hover'];
+    
+    if (hoverAction) {
+      hoverAction.play();
+    }
+  }, [actions]);
 
   useFrame(() => {
     if (!groupRef.current) return
+
     animateDrone(groupRef.current, clock)
 
-    // Scroll-based tilt and scale
     const scrollFactor = Math.min(scrollY / 600, 1)
     groupRef.current.rotation.x = scrollFactor * 0.4
-    groupRef.current.scale.setScalar(1 - scrollFactor * 0.3)
+
+    groupRef.current.position.y=-1.8
+
+    const baseScale = 13
+    groupRef.current.scale.setScalar(baseScale * (1 - scrollFactor * 0.3))
   })
 
   return (
