@@ -1,6 +1,7 @@
 'use client'
 
-import { memo } from 'react'
+import { memo, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Package, Plus, Check } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
@@ -38,18 +39,17 @@ interface ProductCardProps {
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 
-function ProductImage({ src, alt, size = 44 }: { src: string; alt: string; size?: number }) {
+function ProductThumbnail({ src, alt }: { src: string; alt: string }) {
+  const [errored, setErrored] = useState(false)
+  if (errored) return <Package size={44} aria-hidden="true" />
   return (
-    <img
-      src={src}
+    <Image
+      src={`${base}${src}`}
       alt={alt}
-      className="w-full h-full object-cover"
-      onError={(e) => {
-        const target = e.currentTarget
-        target.style.display = 'none'
-        const placeholder = target.nextElementSibling as HTMLElement | null
-        if (placeholder) placeholder.style.display = 'flex'
-      }}
+      fill
+      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+      className="object-cover"
+      onError={() => setErrored(true)}
     />
   )
 }
@@ -57,6 +57,7 @@ function ProductImage({ src, alt, size = 44 }: { src: string; alt: string; size?
 export const ProductCard = memo(function ProductCard({ product, inBuild = false, onToggleBuild }: ProductCardProps) {
   const locale = useLocale()
   const t = useTranslations('catalog')
+
   return (
     <div className="group relative rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden hover:border-[var(--accent)] transition-colors">
       <Link
@@ -64,18 +65,11 @@ export const ProductCard = memo(function ProductCard({ product, inBuild = false,
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
       >
         <div className="relative h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)] overflow-hidden">
-          {product.thumbnailUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <ProductImage src={`${base}${product.thumbnailUrl}`} alt={product.name} />
-          )}
-          <div
-            className="w-full h-full items-center justify-center text-[var(--text-secondary)]"
-            style={{ display: product.thumbnailUrl ? 'none' : 'flex' }}
-            aria-hidden="true"
-          >
-            <Package size={44} />
-          </div>
-          <div className="absolute inset-0 flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" aria-hidden="true">
+          {product.thumbnailUrl
+            ? <ProductThumbnail src={product.thumbnailUrl} alt={product.name} />
+            : <Package size={44} aria-hidden="true" />
+          }
+          <div className="absolute inset-0 flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-hidden="true">
             <p className="product-card-summary w-full rounded-md px-2 py-1.5 text-xs text-white leading-snug">
               {product.shortSummary}
             </p>

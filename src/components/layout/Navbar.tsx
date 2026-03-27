@@ -85,22 +85,13 @@ export function Navbar() {
       </button>
     </>
   ) : (
-    <>
-      <Link
-        href={localePath(locale, ROUTES.AUTH_LOGIN)}
-        className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-        style={tapStyle}
-      >
-        {t('signIn')}
-      </Link>
-      <Link
-        href={localePath(locale, ROUTES.AUTH_REGISTER)}
-        className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-[var(--bg-primary)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-        style={tapStyle}
-      >
-        {t('getStarted')}
-      </Link>
-    </>
+    <Link
+      href={localePath(locale, ROUTES.AUTH_LOGIN)}
+      className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-[var(--bg-primary)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+      style={tapStyle}
+    >
+      {t('getStarted')}
+    </Link>
   )
 
   const AuthMobile = user ? (
@@ -128,13 +119,6 @@ export function Navbar() {
     <div className="flex flex-col gap-2">
       <Link
         href={localePath(locale, ROUTES.AUTH_LOGIN)}
-        className="flex min-h-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-        style={tapStyle}
-      >
-        {t('signIn')}
-      </Link>
-      <Link
-        href={localePath(locale, ROUTES.AUTH_REGISTER)}
         className="flex min-h-[44px] items-center rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-[var(--bg-primary)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={tapStyle}
       >

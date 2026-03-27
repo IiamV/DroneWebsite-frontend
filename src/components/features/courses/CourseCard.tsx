@@ -1,6 +1,7 @@
 'use client'
 
-import { memo } from 'react'
+import { memo, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Cpu } from 'lucide-react'
@@ -17,6 +18,23 @@ const DIFFICULTY_COLORS: Record<Course['difficulty'], string> = {
 
 interface CourseCardProps {
   course: Course
+}
+
+const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
+
+function CourseThumbnail({ src, alt }: { src: string; alt: string }) {
+  const [errored, setErrored] = useState(false)
+  if (errored) return <Cpu size={40} aria-hidden="true" />
+  return (
+    <Image
+      src={`${base}${src}`}
+      alt={alt}
+      fill
+      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      className="object-cover"
+      onError={() => setErrored(true)}
+    />
+  )
 }
 
 export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) {
@@ -40,27 +58,11 @@ export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) 
         style={{ touchAction: 'manipulation' }}
       >
         {/* Thumbnail */}
-        <div className="h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)] overflow-hidden">
-          {course.thumbnailUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}${course.thumbnailUrl}`}
-              alt={course.title}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-                const fb = e.currentTarget.nextElementSibling as HTMLElement | null
-                if (fb) fb.style.display = 'flex'
-              }}
-            />
-          )}
-          <div
-            className="w-full h-full items-center justify-center text-[var(--text-secondary)]"
-            style={{ display: course.thumbnailUrl ? 'none' : 'flex' }}
-            aria-hidden="true"
-          >
-            <Cpu size={40} />
-          </div>
+        <div className="relative h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)] overflow-hidden">
+          {course.thumbnailUrl
+            ? <CourseThumbnail src={course.thumbnailUrl} alt={course.title} />
+            : <Cpu size={40} aria-hidden="true" />
+          }
         </div>
 
         <div className="p-4">
