@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Package, Check, Box, Image as ImageIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import { CompatibilityPanel } from './CompatibilityPanel'
 import { Product3DViewer } from './Product3DViewer'
@@ -34,9 +35,37 @@ interface ProductDetailProps {
   compatibleProducts: Product[]
 }
 
+const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
+
+function FallbackImage({ src, alt, className, fallbackSize = 80 }: { src: string; alt: string; className?: string; fallbackSize?: number }) {
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onError={(e) => {
+          e.currentTarget.style.display = 'none'
+          const fb = e.currentTarget.nextElementSibling as HTMLElement | null
+          if (fb) fb.style.display = 'flex'
+        }}
+      />
+      <div
+        className="w-full h-full items-center justify-center text-[var(--text-secondary)]"
+        style={{ display: 'none' }}
+        aria-hidden="true"
+      >
+        <Package size={fallbackSize} />
+      </div>
+    </>
+  )
+}
+
 export function ProductDetail({ product, compatibleProducts }: ProductDetailProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [show3D, setShow3D] = useState(false)
+  const t = useTranslations('catalog')
 
   return (
     <div className="space-y-12">
@@ -49,11 +78,11 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
             {show3D && product.modelUrl ? (
               <Product3DViewer modelUrl={product.modelUrl} productName={product.name} />
             ) : product.imageUrls[activeImageIndex] ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}${product.imageUrls[activeImageIndex]}`}
+              <FallbackImage
+                src={`${base}${product.imageUrls[activeImageIndex]}`}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                fallbackSize={80}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[var(--text-secondary)]">
@@ -69,9 +98,9 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
                 aria-label={show3D ? 'Switch to image view' : 'Switch to 3D view'}
               >
                 {show3D ? (
-                  <><ImageIcon size={14} aria-hidden="true" /> Image</>
+                  <><ImageIcon size={14} aria-hidden="true" /> {t('viewImage')}</>
                 ) : (
-                  <><Box size={14} aria-hidden="true" /> 3D View</>
+                  <><Box size={14} aria-hidden="true" /> {t('view3d')}</>
                 )}
               </button>
             )}
@@ -96,11 +125,11 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
                   aria-pressed={activeImageIndex === i}
                 >
                   {url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}${url}`}
+                    <FallbackImage
+                      src={`${base}${url}`}
                       alt={`${product.name} ${i + 1}`}
                       className="w-full h-full object-cover"
+                      fallbackSize={18}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -128,7 +157,7 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
 
           {/* Features */}
           <div>
-            <h2 className="font-semibold text-[var(--text-primary)] mb-2">Features</h2>
+            <h2 className="font-semibold text-[var(--text-primary)] mb-2">{t('features')}</h2>
             <ul className="space-y-1" role="list">
               {product.features.map((f) => (
                 <li key={f} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
@@ -159,7 +188,7 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
               className="inline-flex items-center justify-center rounded-md px-4 font-medium transition-colors min-h-[44px] bg-[var(--accent)] text-[var(--bg-primary)] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
               style={{ touchAction: 'manipulation' }}
             >
-              Buy / View Product ↗
+              {t('buyProduct')}
             </a>
           )}
         </div>
@@ -167,7 +196,7 @@ export function ProductDetail({ product, compatibleProducts }: ProductDetailProp
 
       {/* Specs table */}
       <section aria-label="Product specifications">
-        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Specifications</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">{t('specifications')}</h2>
         <div className="overflow-x-auto rounded-lg border border-[var(--border)]">
           <table className="w-full text-sm">
             <tbody>

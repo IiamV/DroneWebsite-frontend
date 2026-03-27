@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Monitor, Apple, Terminal, Download as DownloadIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/Toast'
 import type { Download } from '@/types'
@@ -13,18 +14,12 @@ const PLATFORM_ICONS: Record<Download['platform'], React.ReactNode> = {
   all: <DownloadIcon size={22} />,
 }
 
-const PLATFORM_LABELS: Record<Download['platform'], string> = {
-  windows: 'Windows',
-  mac: 'macOS',
-  linux: 'Linux',
-  all: 'All Platforms',
-}
-
 export function DownloadList({ downloads }: { downloads: Download[] }) {
   const { toast } = useToast()
+  const t = useTranslations('downloads')
 
   if (downloads.length === 0) {
-    return <p className="text-muted-foreground py-8 text-center">No downloads available for the selected platform.</p>
+    return <p className="text-muted-foreground py-8 text-center">{t('noDownloads')}</p>
   }
 
   return (
@@ -41,18 +36,18 @@ export function DownloadList({ downloads }: { downloads: Download[] }) {
             <h3 className="font-semibold truncate">{dl.title}</h3>
             <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">{dl.description}</p>
             <div className="flex flex-wrap gap-3 mt-1.5 text-xs text-muted-foreground">
-              <span>v{dl.version}</span>
-              <span>{PLATFORM_LABELS[dl.platform]}</span>
+              <span>{t('version')} {dl.version}</span>
+              <span>{t(dl.platform === 'all' ? 'allPlatforms' : dl.platform)}</span>
               <span>{dl.fileSize}</span>
             </div>
           </div>
           <Button
             className="flex-shrink-0"
             onClick={() => toast('Download will be available after backend setup', 'info')}
-            aria-label={`Download ${dl.title} v${dl.version}`}
+            aria-label={`${t('download')} ${dl.title} v${dl.version}`}
           >
             <DownloadIcon size={16} className="mr-2" />
-            Download
+            {t('download')}
           </Button>
         </li>
       ))}

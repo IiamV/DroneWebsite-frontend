@@ -2,6 +2,7 @@
 
 import { Lock } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { ModuleSidebar } from './ModuleSidebar'
 import { CoursePlayer } from './CoursePlayer'
 import { UpgradeModal } from '@/components/features/subscription/UpgradeModal'
@@ -22,6 +23,9 @@ interface CourseDetailClientProps {
 }
 
 export function CourseDetailClient({ course, subscription, tiers }: CourseDetailClientProps) {
+  const t = useTranslations('courseDetail')
+  const tc = useTranslations('courses')
+
   const sorted = [...course.modules].sort((a, b) => a.order - b.order)
   const [activeModuleId, setActiveModuleId] = useState(sorted[0]?.id ?? '')
   const [upgradeOpen, setUpgradeOpen] = useState(false)
@@ -33,7 +37,7 @@ export function CourseDetailClient({ course, subscription, tiers }: CourseDetail
   const hasAccess = userTierRank >= requiredRank
 
   const activeModule = sorted.find((m) => m.id === activeModuleId) ?? sorted[0]
-  const requiredTier = tiers.find((t) => t.id === course.requiredTier)
+  const requiredTier = tiers.find((tier) => tier.id === course.requiredTier)
   const currentTierId = subscription?.tierId
 
   const durationHours = Math.floor(course.durationMinutes / 60)
@@ -48,7 +52,7 @@ export function CourseDetailClient({ course, subscription, tiers }: CourseDetail
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           <Badge variant="outline" style={{ borderColor: DIFFICULTY_COLORS[course.difficulty], color: DIFFICULTY_COLORS[course.difficulty] }}>
-            {course.difficulty.charAt(0).toUpperCase() + course.difficulty.slice(1)}
+            {tc(course.difficulty)}
           </Badge>
           <span className="text-sm text-[var(--text-secondary)] capitalize">{course.category}</span>
           <span className="text-sm text-[var(--text-secondary)]">·</span>
@@ -60,7 +64,6 @@ export function CourseDetailClient({ course, subscription, tiers }: CourseDetail
 
       {hasAccess ? (
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar */}
           <aside className="lg:w-64 shrink-0">
             <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-4">
               <ModuleSidebar
@@ -70,8 +73,6 @@ export function CourseDetailClient({ course, subscription, tiers }: CourseDetail
               />
             </div>
           </aside>
-
-          {/* Content */}
           <div className="flex-1 min-w-0 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-6">
             {activeModule && <CoursePlayer module={activeModule} />}
           </div>
@@ -84,17 +85,17 @@ export function CourseDetailClient({ course, subscription, tiers }: CourseDetail
             </div>
           </div>
           <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
-            {requiredTier ? `${requiredTier.name} plan required` : 'Upgrade required'}
+            {requiredTier ? t('planRequired', { plan: requiredTier.name }) : t('upgradeRequired')}
           </h2>
           <p className="text-[var(--text-secondary)] mb-6 max-w-md mx-auto">
-            This course requires a higher subscription tier. Upgrade to unlock all modules.
+            {t('upgradeMessage')}
           </p>
           <button
             onClick={() => setUpgradeOpen(true)}
             className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-6 rounded-md bg-[var(--accent)] text-[var(--bg-primary)] font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             style={{ touchAction: 'manipulation' }}
           >
-            View upgrade options
+            {t('viewUpgrade')}
           </button>
         </div>
       )}

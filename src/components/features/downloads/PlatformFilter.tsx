@@ -1,16 +1,12 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import type { Download } from '@/types'
 
 type Platform = Download['platform'] | 'all'
 
-const PLATFORMS: { value: Platform; label: string }[] = [
-  { value: 'all', label: 'All Platforms' },
-  { value: 'windows', label: 'Windows' },
-  { value: 'mac', label: 'macOS' },
-  { value: 'linux', label: 'Linux' },
-]
+const PLATFORM_KEYS: Platform[] = ['all', 'windows', 'mac', 'linux']
 
 interface PlatformFilterProps {
   selected: Platform
@@ -18,9 +14,11 @@ interface PlatformFilterProps {
 }
 
 export function PlatformFilter({ selected, onChange }: PlatformFilterProps) {
+  const t = useTranslations('downloads')
+
   return (
     <div role="group" aria-label="Filter by platform" className="flex flex-wrap gap-2">
-      {PLATFORMS.map(({ value, label }) => (
+      {PLATFORM_KEYS.map((value) => (
         <Button
           key={value}
           variant={selected === value ? 'default' : 'outline'}
@@ -28,7 +26,7 @@ export function PlatformFilter({ selected, onChange }: PlatformFilterProps) {
           onClick={() => onChange(value)}
           aria-pressed={selected === value}
         >
-          {label}
+          {t(value === 'all' ? 'allPlatforms' : value)}
         </Button>
       ))}
     </div>

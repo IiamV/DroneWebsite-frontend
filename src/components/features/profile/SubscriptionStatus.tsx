@@ -1,7 +1,7 @@
 'use client'
 
 import { Check } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import type { Subscription, SubscriptionTier } from '@/types'
 import { ROUTES, localePath } from '@/constants/routes'
 
@@ -19,39 +19,42 @@ const STATUS_STYLES: Record<Subscription['status'], string> = {
 
 export function SubscriptionStatus({ subscription, tier }: SubscriptionStatusProps) {
   const locale = useLocale()
-  const statusLabel = subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)
+  const t = useTranslations('profile')
+
+  const statusKey = subscription.status as 'active' | 'expired' | 'cancelled' | 'pending'
+  const statusLabel = t(statusKey)
 
   return (
     <div className="p-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)] space-y-4">
-      <h3 className="text-base font-semibold text-[var(--text-primary)]">Subscription</h3>
+      <h3 className="text-base font-semibold text-[var(--text-primary)]">{t('subscription')}</h3>
 
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
-          <p className="text-[var(--text-secondary)]">Plan</p>
+          <p className="text-[var(--text-secondary)]">{t('plan')}</p>
           <p className="font-medium text-[var(--text-primary)] mt-0.5">{tier.name}</p>
         </div>
         <div>
-          <p className="text-[var(--text-secondary)]">Status</p>
-          <span className={`inline-block mt-0.5 px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_STYLES[subscription.status]}`}>
+          <p className="text-[var(--text-secondary)]">{t('status')}</p>
+          <span className={`inline-block mt-0.5 px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_STYLES[statusKey]}`}>
             {statusLabel}
           </span>
         </div>
         <div>
-          <p className="text-[var(--text-secondary)]">Started</p>
+          <p className="text-[var(--text-secondary)]">{t('started')}</p>
           <p className="font-medium text-[var(--text-primary)] mt-0.5">
-            {subscription.startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+            {subscription.startDate.toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
           </p>
         </div>
         <div>
-          <p className="text-[var(--text-secondary)]">Renews</p>
+          <p className="text-[var(--text-secondary)]">{t('renews')}</p>
           <p className="font-medium text-[var(--text-primary)] mt-0.5">
-            {subscription.endDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+            {subscription.endDate.toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
           </p>
         </div>
       </div>
 
       <div className="pt-2 border-t border-[var(--border)]">
-        <p className="text-xs text-[var(--text-secondary)] mb-3">Included features</p>
+        <p className="text-xs text-[var(--text-secondary)] mb-3">{t('features')}</p>
         <ul className="space-y-1">
           {tier.features.map((feature) => (
             <li key={feature} className="flex items-center gap-2 text-sm text-[var(--text-primary)]">
@@ -66,7 +69,7 @@ export function SubscriptionStatus({ subscription, tier }: SubscriptionStatusPro
         href={localePath(locale, ROUTES.SUBSCRIPTION)}
         className="inline-block mt-2 text-sm font-medium text-[var(--accent)] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded"
       >
-        Manage subscription →
+        {t('manage')}
       </a>
     </div>
   )

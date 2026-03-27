@@ -20,20 +20,20 @@
     "browse": "Browse Courses"
   },
   "features": {
-    "title": "Everything you need to build and fly",
-    "sim": "3D Simulation",
-    "simDesc": "Visualize drone builds in real-time 3D before you buy a single part.",
-    "courses": "Expert Courses",
-    "coursesDesc": "From beginner fundamentals to advanced PID tuning — learn at your own pace.",
+    "title": "Everything you need to master drones",
+    "sim": "3D Drone Simulation",
+    "simDesc": "Visualise and test drone configurations in real-time with our WebGL-powered simulator.",
+    "courses": "Expert-Led Courses",
+    "coursesDesc": "Learn from beginner to advanced with structured courses covering flight mechanics, electronics, and software.",
     "catalog": "Component Catalog",
-    "catalogDesc": "Browse motors, frames, ESCs, and more with full compatibility filtering.",
-    "downloads": "IDE Downloads",
-    "downloadsDesc": "Download the Drone Application by Insai to simulate and configure drones locally."
+    "catalogDesc": "Browse drone parts with smart compatibility filtering to plan your perfect build.",
+    "downloads": "Simulation Software",
+    "downloadsDesc": "Download the Drone Application by Insai IDE and fly virtual missions before touching real hardware."
   },
   "cta": {
-    "title": "Ready to start building?",
-    "subtitle": "Join thousands of pilots learning drone technology on our platform.",
-    "button": "Get Started Free"
+    "title": "Ready to take flight?",
+    "subtitle": "Choose a plan and unlock full access to courses, simulations, and downloadable software.",
+    "button": "View Plans"
   },
   "footer": {
     "tagline": "Learn, simulate, and build drone configurations.",
@@ -63,7 +63,11 @@
     "emailPlaceholder": "you@example.com",
     "passwordPlaceholder": "••••••••",
     "namePlaceholder": "Your name",
-    "minPassword": "Min. 8 characters"
+    "minPassword": "Min. 8 characters",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to your account to continue",
+    "registerTitle": "Create an account",
+    "registerSubtitle": "Join the Drone Simulation Platform"
   },
   "pricing": {
     "title": "Choose your plan",
@@ -74,5 +78,104 @@
     "currentPlan": "Current plan",
     "subscribe": "Subscribe",
     "getStarted": "Get started"
+  },
+  "courses": {
+    "title": "Courses",
+    "subtitle": "Learn drone technology, assembly, and advanced tuning at your own pace.",
+    "modules": "modules",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced"
+  },
+  "catalog": {
+    "title": "Product Catalog",
+    "subtitle": "Browse drone components and use the compatibility filter to find parts that work together.",
+    "addToBuild": "Add to build",
+    "inBuild": "In build",
+    "backToCatalog": "Catalog",
+    "buyProduct": "Buy / View Product ↗",
+    "features": "Features",
+    "specifications": "Specifications",
+    "compatibleProducts": "Compatible Products",
+    "noCompatible": "No compatible products listed.",
+    "notFound": "Product not found.",
+    "view3d": "3D View",
+    "viewImage": "Image"
+  },
+  "downloads": {
+    "title": "Downloads",
+    "subtitle": "Download the simulator and tools for your platform.",
+    "allPlatforms": "All",
+    "windows": "Windows",
+    "mac": "macOS",
+    "linux": "Linux",
+    "download": "Download",
+    "version": "Version",
+    "size": "Size",
+    "released": "Released",
+    "changelog": "Changelog",
+    "requiresPlan": "Requires {plan} plan",
+    "noDownloads": "No downloads available for the selected platform."
+  },
+  "docs": {
+    "notFound": "Page not found.",
+    "navigation": "Documentation",
+    "lastUpdated": "Last updated"
+  },
+  "profile": {
+    "title": "My Profile",
+    "plan": "Plan",
+    "status": "Status",
+    "started": "Started",
+    "renews": "Renews",
+    "subscription": "Subscription",
+    "features": "Included features",
+    "manage": "Manage subscription →",
+    "active": "Active",
+    "expired": "Expired",
+    "cancelled": "Cancelled",
+    "pending": "Pending"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "subtitle": "The page you're looking for doesn't exist or has been moved.",
+    "back": "Back to homepage"
+  },
+  "courseDetail": {
+    "planRequired": "{plan} plan required",
+    "upgradeRequired": "Upgrade required",
+    "upgradeMessage": "This course requires a higher subscription tier. Upgrade to unlock all modules.",
+    "viewUpgrade": "View upgrade options",
+    "courseNotFound": "Course not found."
+  },
+  "assemblyFilter": {
+    "myBuild": "My Build",
+    "clearAll": "Clear all",
+    "emptyMessage": "Add products to filter by compatibility.",
+    "components": "components",
+    "component": "component",
+    "showingCompatible": "showing compatible products"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "subscribingTo": "You're subscribing to the {plan} plan.",
+    "planNotFound": "Plan not found.",
+    "cardholderName": "Cardholder name",
+    "cardNumber": "Card number",
+    "expiry": "Expiry",
+    "cvv": "CVV",
+    "plan": "plan",
+    "total": "Total",
+    "payButton": "Pay with VNPay",
+    "secureMessage": "Secured by VNPay. Your payment details are encrypted.",
+    "paymentPending": "Payment integration will be available after backend setup.",
+    "monthly": "mo",
+    "yearly": "yr"
+  },
+  "profileCard": {
+    "memberSince": "Member since"
+  },
+  "tierBadge": {
+    "currentPlan": "Current plan"
   }
 }

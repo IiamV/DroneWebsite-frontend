@@ -23,7 +23,7 @@ export default async function DocsIndexPage({
         <div className="mb-6">
           <DocBreadcrumb slug={doc.slug} />
         </div>
-        <DocContent doc={doc} />
+        <DocContent doc={doc} locale={locale} />
       </main>
     </div>
   )

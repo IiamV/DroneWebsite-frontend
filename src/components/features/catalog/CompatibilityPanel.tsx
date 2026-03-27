@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Package } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
 import { ROUTES, localePath } from '@/constants/routes'
@@ -35,11 +35,12 @@ interface CompatibilityPanelProps {
 
 export function CompatibilityPanel({ compatibleProducts }: CompatibilityPanelProps) {
   const locale = useLocale()
+  const t = useTranslations('catalog')
   if (compatibleProducts.length === 0) {
     return (
       <section aria-label="Compatible products">
-        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Compatible Products</h2>
-        <p className="text-[var(--text-secondary)] text-sm">No compatible products listed.</p>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">{t('compatibleProducts')}</h2>
+        <p className="text-[var(--text-secondary)] text-sm">{t('noCompatible')}</p>
       </section>
     )
   }
@@ -47,7 +48,7 @@ export function CompatibilityPanel({ compatibleProducts }: CompatibilityPanelPro
   return (
     <section aria-label="Compatible products">
       <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
-        Compatible Products
+        {t('compatibleProducts')}
         <span className="ml-2 text-sm font-normal text-[var(--text-secondary)]">
           ({compatibleProducts.length})
         </span>

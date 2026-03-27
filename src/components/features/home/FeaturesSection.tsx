@@ -2,34 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { Box, BookOpen, Layers, Download } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { LucideIcon } from 'lucide-react'
-
-const features: { icon: LucideIcon; title: string; description: string }[] = [
-  {
-    icon: Box,
-    title: '3D Drone Simulation',
-    description:
-      'Visualise and test drone configurations in real-time with our WebGL-powered simulator.',
-  },
-  {
-    icon: BookOpen,
-    title: 'Expert-Led Courses',
-    description:
-      'Learn from beginner to advanced with structured courses covering flight mechanics, electronics, and software.',
-  },
-  {
-    icon: Layers,
-    title: 'Component Catalog',
-    description:
-      'Browse drone parts with smart compatibility filtering to plan your perfect build.',
-  },
-  {
-    icon: Download,
-    title: 'Simulation Software',
-    description:
-      'Download the Drone Application by Insai IDE and fly virtual missions before touching real hardware.',
-  },
-]
 
 const cardVariants = {
   hidden: { opacity: 0, y: 24 },
@@ -37,10 +11,19 @@ const cardVariants = {
 }
 
 export function FeaturesSection() {
+  const t = useTranslations('features')
+
+  const features: { icon: LucideIcon; title: string; description: string }[] = [
+    { icon: Box,      title: t('sim'),       description: t('simDesc') },
+    { icon: BookOpen, title: t('courses'),   description: t('coursesDesc') },
+    { icon: Layers,   title: t('catalog'),   description: t('catalogDesc') },
+    { icon: Download, title: t('downloads'), description: t('downloadsDesc') },
+  ]
+
   return (
     <section className="px-6 py-16 max-w-7xl mx-auto">
       <h2 className="text-3xl font-bold text-center mb-12 text-[var(--text-primary)]">
-        Everything you need to master drones
+        {t('title')}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {features.map((feature) => {
@@ -58,9 +41,7 @@ export function FeaturesSection() {
                 <Icon size={20} aria-hidden="true" />
               </div>
               <h3 className="font-semibold text-lg text-[var(--text-primary)]">{feature.title}</h3>
-              <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
-                {feature.description}
-              </p>
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed">{feature.description}</p>
             </motion.div>
           )
         })}

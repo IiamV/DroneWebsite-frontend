@@ -4,7 +4,7 @@ import { memo } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Cpu } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import type { Course } from '@/types'
 import { ROUTES, localePath } from '@/constants/routes'
@@ -21,6 +21,7 @@ interface CourseCardProps {
 
 export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) {
   const locale = useLocale()
+  const t = useTranslations('courses')
   const durationHours = Math.floor(course.durationMinutes / 60)
   const durationMins = course.durationMinutes % 60
   const durationLabel = durationHours > 0
@@ -38,15 +39,34 @@ export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) 
         className="block rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden hover:border-[var(--accent)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={{ touchAction: 'manipulation' }}
       >
-        {/* Thumbnail placeholder */}
-        <div className="h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)]">
-          <Cpu size={40} aria-hidden="true" />
+        {/* Thumbnail */}
+        <div className="h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)] overflow-hidden">
+          {course.thumbnailUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}${course.thumbnailUrl}`}
+              alt={course.title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+                const fb = e.currentTarget.nextElementSibling as HTMLElement | null
+                if (fb) fb.style.display = 'flex'
+              }}
+            />
+          )}
+          <div
+            className="w-full h-full items-center justify-center text-[var(--text-secondary)]"
+            style={{ display: course.thumbnailUrl ? 'none' : 'flex' }}
+            aria-hidden="true"
+          >
+            <Cpu size={40} />
+          </div>
         </div>
 
         <div className="p-4">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Badge variant="outline" style={{ borderColor: DIFFICULTY_COLORS[course.difficulty], color: DIFFICULTY_COLORS[course.difficulty] }}>
-              {course.difficulty.charAt(0).toUpperCase() + course.difficulty.slice(1)}
+              {t(course.difficulty)}
             </Badge>
             <span className="text-xs text-[var(--text-secondary)] capitalize">{course.category}</span>
           </div>
@@ -59,7 +79,7 @@ export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) 
           </p>
 
           <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-            <span>{course.modules.length} modules</span>
+            <span>{course.modules.length} {t('modules')}</span>
             <span>{durationLabel}</span>
           </div>
         </div>

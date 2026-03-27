@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import type { DocPage } from '@/types'
 
@@ -91,11 +92,12 @@ function NavItem({ node, currentSlug }: NavItemProps) {
 
 export function DocSidebar({ docs, currentSlug }: DocSidebarProps) {
   const tree = buildTree(docs)
+  const t = useTranslations('docs')
 
   return (
     <nav aria-label="Documentation navigation">
       <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] mb-3 px-2">
-        Documentation
+        {t('navigation')}
       </p>
       <ul className="space-y-0.5">
         {tree.map((node) => (

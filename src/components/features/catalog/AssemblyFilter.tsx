@@ -1,6 +1,7 @@
 'use client'
 
 import { X, Package } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { Product } from '@/types'
 
 const CATEGORY_LABELS: Record<Product['category'], string> = {
@@ -21,18 +22,20 @@ interface AssemblyFilterProps {
 }
 
 export function AssemblyFilter({ selectedProducts, onRemove, onClear }: AssemblyFilterProps) {
+  const t = useTranslations('assemblyFilter')
+
   return (
     <aside className="w-full lg:w-56 shrink-0" aria-label="Build compatibility filter">
       <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-4 sticky top-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-[var(--text-primary)] text-sm">My Build</h2>
+          <h2 className="font-semibold text-[var(--text-primary)] text-sm">{t('myBuild')}</h2>
           {selectedProducts.length > 0 && (
             <button
               onClick={onClear}
               className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               aria-label="Clear build"
             >
-              Clear all
+              {t('clearAll')}
             </button>
           )}
         </div>
@@ -41,7 +44,7 @@ export function AssemblyFilter({ selectedProducts, onRemove, onClear }: Assembly
           <div className="text-center py-6">
             <Package size={28} className="mx-auto mb-2 text-[var(--text-secondary)] opacity-40" aria-hidden="true" />
             <p className="text-xs text-[var(--text-secondary)]">
-              Add products to filter by compatibility.
+              {t('emptyMessage')}
             </p>
           </div>
         ) : (
@@ -66,7 +69,7 @@ export function AssemblyFilter({ selectedProducts, onRemove, onClear }: Assembly
 
         {selectedProducts.length > 0 && (
           <p className="mt-3 pt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
-            {selectedProducts.length} component{selectedProducts.length !== 1 ? 's' : ''} — showing compatible products
+            {selectedProducts.length} {selectedProducts.length !== 1 ? t('components') : t('component')} — {t('showingCompatible')}
           </p>
         )}
       </div>

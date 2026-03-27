@@ -2,13 +2,24 @@
 
 import { useState } from 'react'
 import { Lock } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { SubscriptionTier } from '@/types'
 
-export function VNPayCheckoutForm({ tier }: { tier: SubscriptionTier }) {
+export function VNPayCheckoutForm({ tier, locale: localeProp }: { tier: SubscriptionTier; locale?: string }) {
   const [submitted, setSubmitted] = useState(false)
+  const t = useTranslations('checkout')
+  const localeHook = useLocale()
+  const locale = localeProp ?? localeHook
+  const isVi = locale === 'vi'
+
+  const priceDisplay = isVi
+    ? `${new Intl.NumberFormat('vi-VN').format(tier.priceVnd)}₫`
+    : `$${tier.price.toFixed(2)}`
+
+  const billingLabel = tier.billingCycle === 'monthly' ? t('monthly') : t('yearly')
 
   if (submitted) {
     return (
@@ -18,7 +29,7 @@ export function VNPayCheckoutForm({ tier }: { tier: SubscriptionTier }) {
             <Lock size={22} />
           </div>
         </div>
-        <p className="text-muted-foreground">Payment integration will be available after backend setup.</p>
+        <p className="text-muted-foreground">{t('paymentPending')}</p>
       </div>
     )
   }
@@ -26,35 +37,35 @@ export function VNPayCheckoutForm({ tier }: { tier: SubscriptionTier }) {
   return (
     <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true) }} className="space-y-5" noValidate>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="cardholder-name">Cardholder name</Label>
+        <Label htmlFor="cardholder-name">{t('cardholderName')}</Label>
         <Input id="cardholder-name" type="text" placeholder="Nguyen Van A" required autoComplete="name" />
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="card-number">Card number</Label>
+        <Label htmlFor="card-number">{t('cardNumber')}</Label>
         <Input id="card-number" type="text" placeholder="9704 0000 0000 0018" inputMode="numeric" autoComplete="cc-number" />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="expiry">Expiry</Label>
+          <Label htmlFor="expiry">{t('expiry')}</Label>
           <Input id="expiry" type="text" placeholder="MM/YY" autoComplete="cc-exp" />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="cvv">CVV</Label>
+          <Label htmlFor="cvv">{t('cvv')}</Label>
           <Input id="cvv" type="text" placeholder="123" autoComplete="cc-csc" />
         </div>
       </div>
       <div className="rounded-lg border bg-muted/50 p-4 text-sm">
         <div className="flex justify-between text-muted-foreground mb-1">
-          <span>{tier.name} plan</span>
-          <span>{tier.price === 0 ? 'Free' : `$${tier.price.toFixed(2)}/${tier.billingCycle === 'monthly' ? 'mo' : 'yr'}`}</span>
+          <span>{tier.name} {t('plan')}</span>
+          <span>{tier.price === 0 ? '0' : `${priceDisplay}/${billingLabel}`}</span>
         </div>
         <div className="flex justify-between font-semibold border-t pt-2 mt-2">
-          <span>Total</span>
-          <span>{tier.price === 0 ? 'Free' : `$${tier.price.toFixed(2)}`}</span>
+          <span>{t('total')}</span>
+          <span>{tier.price === 0 ? '0' : priceDisplay}</span>
         </div>
       </div>
-      <Button type="submit" className="w-full" size="lg">Pay with VNPay</Button>
-      <p className="text-xs text-center text-muted-foreground">Secured by VNPay. Your payment details are encrypted.</p>
+      <Button type="submit" className="w-full" size="lg">{t('payButton')}</Button>
+      <p className="text-xs text-center text-muted-foreground">{t('secureMessage')}</p>
     </form>
   )
 }

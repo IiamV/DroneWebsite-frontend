@@ -20,20 +20,20 @@
     "browse": "Xem khóa học"
   },
   "features": {
-    "title": "Mọi thứ bạn cần để xây dựng và bay",
+    "title": "Mọi thứ bạn cần để làm chủ drone",
     "sim": "Mô phỏng 3D",
-    "simDesc": "Trực quan hóa cấu hình drone theo thời gian thực trước khi mua bất kỳ linh kiện nào.",
+    "simDesc": "Trực quan hóa và kiểm tra cấu hình drone theo thời gian thực với bộ mô phỏng WebGL.",
     "courses": "Khóa học chuyên sâu",
-    "coursesDesc": "Từ kiến thức cơ bản đến tinh chỉnh PID nâng cao — học theo tốc độ của bạn.",
+    "coursesDesc": "Học từ cơ bản đến nâng cao với các khóa học có cấu trúc về cơ học bay, điện tử và phần mềm.",
     "catalog": "Danh mục linh kiện",
-    "catalogDesc": "Duyệt động cơ, khung, ESC và nhiều hơn nữa với bộ lọc tương thích đầy đủ.",
-    "downloads": "Tải IDE",
-    "downloadsDesc": "Tải Drone Application by Insai để mô phỏng và cấu hình drone trên máy tính."
+    "catalogDesc": "Duyệt linh kiện drone với bộ lọc tương thích thông minh để lên kế hoạch cho bản dựng hoàn hảo.",
+    "downloads": "Phần mềm mô phỏng",
+    "downloadsDesc": "Tải Drone Application by Insai IDE và thực hiện các nhiệm vụ ảo trước khi chạm vào phần cứng thật."
   },
   "cta": {
-    "title": "Sẵn sàng bắt đầu xây dựng?",
-    "subtitle": "Tham gia cùng hàng nghìn phi công đang học công nghệ drone trên nền tảng của chúng tôi.",
-    "button": "Bắt đầu miễn phí"
+    "title": "Sẵn sàng cất cánh?",
+    "subtitle": "Chọn gói và mở khóa toàn quyền truy cập khóa học, mô phỏng và phần mềm tải về.",
+    "button": "Xem các gói"
   },
   "footer": {
     "tagline": "Học, mô phỏng và xây dựng cấu hình drone.",
@@ -63,7 +63,11 @@
     "emailPlaceholder": "ban@example.com",
     "passwordPlaceholder": "••••••••",
     "namePlaceholder": "Họ và tên",
-    "minPassword": "Tối thiểu 8 ký tự"
+    "minPassword": "Tối thiểu 8 ký tự",
+    "loginTitle": "Chào mừng trở lại",
+    "loginSubtitle": "Đăng nhập vào tài khoản của bạn để tiếp tục",
+    "registerTitle": "Tạo tài khoản",
+    "registerSubtitle": "Tham gia Nền tảng Mô phỏng Drone"
   },
   "pricing": {
     "title": "Chọn gói của bạn",
@@ -74,5 +78,104 @@
     "currentPlan": "Gói hiện tại",
     "subscribe": "Đăng ký",
     "getStarted": "Bắt đầu"
+  },
+  "courses": {
+    "title": "Khóa học",
+    "subtitle": "Học công nghệ drone, lắp ráp và tinh chỉnh nâng cao theo tốc độ của bạn.",
+    "modules": "bài học",
+    "beginner": "Cơ bản",
+    "intermediate": "Trung cấp",
+    "advanced": "Nâng cao"
+  },
+  "catalog": {
+    "title": "Danh mục sản phẩm",
+    "subtitle": "Duyệt linh kiện drone và dùng bộ lọc tương thích để tìm các bộ phận phù hợp.",
+    "addToBuild": "Thêm vào bản dựng",
+    "inBuild": "Đã thêm",
+    "backToCatalog": "Danh mục",
+    "buyProduct": "Mua / Xem sản phẩm ↗",
+    "features": "Tính năng",
+    "specifications": "Thông số kỹ thuật",
+    "compatibleProducts": "Sản phẩm tương thích",
+    "noCompatible": "Không có sản phẩm tương thích.",
+    "notFound": "Không tìm thấy sản phẩm.",
+    "view3d": "Xem 3D",
+    "viewImage": "Hình ảnh"
+  },
+  "downloads": {
+    "title": "Tải xuống",
+    "subtitle": "Tải phần mềm mô phỏng và công cụ cho nền tảng của bạn.",
+    "allPlatforms": "Tất cả",
+    "windows": "Windows",
+    "mac": "macOS",
+    "linux": "Linux",
+    "download": "Tải xuống",
+    "version": "Phiên bản",
+    "size": "Dung lượng",
+    "released": "Ngày phát hành",
+    "changelog": "Nhật ký thay đổi",
+    "requiresPlan": "Yêu cầu gói {plan}",
+    "noDownloads": "Không có tệp tải xuống cho nền tảng đã chọn."
+  },
+  "docs": {
+    "notFound": "Không tìm thấy trang.",
+    "navigation": "Tài liệu",
+    "lastUpdated": "Cập nhật lần cuối"
+  },
+  "profile": {
+    "title": "Hồ sơ của tôi",
+    "plan": "Gói",
+    "status": "Trạng thái",
+    "started": "Bắt đầu",
+    "renews": "Gia hạn",
+    "subscription": "Đăng ký",
+    "features": "Tính năng đã bao gồm",
+    "manage": "Quản lý đăng ký →",
+    "active": "Đang hoạt động",
+    "expired": "Đã hết hạn",
+    "cancelled": "Đã hủy",
+    "pending": "Đang chờ"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "subtitle": "Trang bạn đang tìm không tồn tại hoặc đã được di chuyển.",
+    "back": "Về trang chủ"
+  },
+  "courseDetail": {
+    "planRequired": "Yêu cầu gói {plan}",
+    "upgradeRequired": "Cần nâng cấp",
+    "upgradeMessage": "Khóa học này yêu cầu gói đăng ký cao hơn. Nâng cấp để mở khóa tất cả bài học.",
+    "viewUpgrade": "Xem tùy chọn nâng cấp",
+    "courseNotFound": "Không tìm thấy khóa học."
+  },
+  "assemblyFilter": {
+    "myBuild": "Bản dựng của tôi",
+    "clearAll": "Xóa tất cả",
+    "emptyMessage": "Thêm sản phẩm để lọc theo tính tương thích.",
+    "components": "linh kiện",
+    "component": "linh kiện",
+    "showingCompatible": "hiển thị sản phẩm tương thích"
+  },
+  "checkout": {
+    "title": "Thanh toán",
+    "subscribingTo": "Bạn đang đăng ký gói {plan}.",
+    "planNotFound": "Không tìm thấy gói.",
+    "cardholderName": "Tên chủ thẻ",
+    "cardNumber": "Số thẻ",
+    "expiry": "Ngày hết hạn",
+    "cvv": "CVV",
+    "plan": "gói",
+    "total": "Tổng cộng",
+    "payButton": "Thanh toán với VNPay",
+    "secureMessage": "Bảo mật bởi VNPay. Thông tin thanh toán của bạn được mã hóa.",
+    "paymentPending": "Tích hợp thanh toán sẽ có sau khi thiết lập backend.",
+    "monthly": "tháng",
+    "yearly": "năm"
+  },
+  "profileCard": {
+    "memberSince": "Thành viên từ"
+  },
+  "tierBadge": {
+    "currentPlan": "Gói hiện tại"
   }
 }

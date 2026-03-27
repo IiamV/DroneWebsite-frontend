@@ -31,7 +31,7 @@ export default async function DocsPage({ params }: DocsPageProps) {
         <div className="mb-6">
           <DocBreadcrumb slug={slug} />
         </div>
-        <DocContent doc={doc} />
+        <DocContent doc={doc} locale={locale} />
       </main>
     </div>
   )

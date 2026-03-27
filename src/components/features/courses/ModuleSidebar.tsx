@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { CourseModule } from '@/types'
 
 interface ModuleSidebarProps {
@@ -10,11 +11,12 @@ interface ModuleSidebarProps {
 
 export function ModuleSidebar({ modules, activeModuleId, onSelectModule }: ModuleSidebarProps) {
   const sorted = [...modules].sort((a, b) => a.order - b.order)
+  const t = useTranslations('courses')
 
   return (
     <nav aria-label="Course modules">
       <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] mb-3 px-2">
-        Modules
+        {t('modules')}
       </h2>
       <ol className="space-y-1">
         {sorted.map((module, index) => {
