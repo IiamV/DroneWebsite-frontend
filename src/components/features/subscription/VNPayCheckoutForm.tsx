@@ -1,71 +1,124 @@
 'use client'
 
 import { useState } from 'react'
-import { Lock } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Lock, Loader2 } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useAuth } from '@/components/layout/AuthProvider'
+import { localePath, ROUTES } from '@/constants/routes'
 import type { SubscriptionTier } from '@/types'
 
 export function VNPayCheckoutForm({ tier, locale: localeProp }: { tier: SubscriptionTier; locale?: string }) {
-  const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const t = useTranslations('checkout')
   const localeHook = useLocale()
   const locale = localeProp ?? localeHook
   const isVi = locale === 'vi'
+  const { user } = useAuth()
+  const router = useRouter()
 
   const priceDisplay = isVi
     ? `${new Intl.NumberFormat('vi-VN').format(tier.priceVnd)}₫`
     : `$${tier.price.toFixed(2)}`
-
   const billingLabel = tier.billingCycle === 'monthly' ? t('monthly') : t('yearly')
 
-  if (submitted) {
-    return (
-      <div className="text-center py-10">
-        <div className="flex justify-center mb-4">
-          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-            <Lock size={22} />
-          </div>
-        </div>
-        <p className="text-muted-foreground">{t('paymentPending')}</p>
-      </div>
-    )
+  // Check for payment result from VNPay return redirect
+  const searchParams = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search)
+    : null
+  const paymentStatus = searchParams?.get('payment')
+  const failReason = searchParams?.get('reason')
+
+  async function handlePay() {
+    if (!user) {
+      router.push(localePath(locale, ROUTES.AUTH_LOGIN))
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const origin = typeof window !== 'undefined' ? window.location.origin : ''
+      const res = await fetch(`${origin}/api/payment/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tierId: tier.id, locale }),
+      })
+
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? 'Failed to create payment')
+
+      // Store URL in sessionStorage before redirect so it survives navigation
+      sessionStorage.setItem('vnpay_last_url', json.paymentUrl)
+      console.log('[VNPay] Payment URL stored in sessionStorage')
+      window.location.href = json.paymentUrl
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Payment failed')
+      setLoading(false)
+    }
   }
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true) }} className="space-y-5" noValidate>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="cardholder-name">{t('cardholderName')}</Label>
-        <Input id="cardholder-name" type="text" placeholder="Nguyen Van A" required autoComplete="name" />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="card-number">{t('cardNumber')}</Label>
-        <Input id="card-number" type="text" placeholder="9704 0000 0000 0018" inputMode="numeric" autoComplete="cc-number" />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="expiry">{t('expiry')}</Label>
-          <Input id="expiry" type="text" placeholder="MM/YY" autoComplete="cc-exp" />
+    <div className="space-y-5">
+      {/* Not logged in warning */}
+      {!user && (
+        <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3 text-sm text-yellow-700 dark:text-yellow-400">
+          You need to be signed in to subscribe.{' '}
+          <a href={localePath(locale, ROUTES.AUTH_LOGIN)} className="underline font-medium">Sign in</a>
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="cvv">{t('cvv')}</Label>
-          <Input id="cvv" type="text" placeholder="123" autoComplete="cc-csc" />
+      )}
+
+      {/* Payment failed notice */}
+      {paymentStatus === 'failed' && (
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
+          Payment was not completed.
+          {failReason && <span className="ml-1 opacity-70">({failReason.replace(/_/g, ' ')})</span>}
         </div>
-      </div>
-      <div className="rounded-lg border bg-muted/50 p-4 text-sm">
-        <div className="flex justify-between text-muted-foreground mb-1">
+      )}
+
+      {/* Order summary */}
+      <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-5 space-y-3">
+        <div className="flex justify-between text-sm text-[var(--text-secondary)]">
           <span>{tier.name} {t('plan')}</span>
-          <span>{tier.price === 0 ? '0' : `${priceDisplay}/${billingLabel}`}</span>
+          <span>{priceDisplay}/{billingLabel}</span>
         </div>
-        <div className="flex justify-between font-semibold border-t pt-2 mt-2">
+        <div className="flex justify-between font-semibold border-t border-[var(--border)] pt-3 text-[var(--text-primary)]">
           <span>{t('total')}</span>
-          <span>{tier.price === 0 ? '0' : priceDisplay}</span>
+          <span>{priceDisplay}</span>
         </div>
       </div>
-      <Button type="submit" className="w-full" size="lg">{t('payButton')}</Button>
-      <p className="text-xs text-center text-muted-foreground">{t('secureMessage')}</p>
-    </form>
+
+      {/* What's included */}
+      <ul className="space-y-1.5 text-sm text-[var(--text-secondary)]">
+        {tier.features.map((f) => (
+          <li key={f} className="flex items-center gap-2">
+            <span className="text-green-500">✓</span> {f}
+          </li>
+        ))}
+      </ul>
+
+      {error && (
+        <p className="text-sm text-destructive text-center">{error}</p>
+      )}
+
+      <Button
+        onClick={handlePay}
+        className="w-full"
+        size="lg"
+        disabled={loading || !user}
+      >
+        {loading
+          ? <><Loader2 size={16} className="animate-spin mr-2" /> Redirecting to VNPay…</>
+          : t('payButton')
+        }
+      </Button>
+
+      <p className="text-xs text-center text-[var(--text-secondary)] flex items-center justify-center gap-1">
+        <Lock size={11} /> {t('secureMessage')}
+      </p>
+    </div>
   )
 }
