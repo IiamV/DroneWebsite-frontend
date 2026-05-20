@@ -3,7 +3,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { TierComparisonTable } from './TierComparisonTable'
-import { mockTiers } from '@/mocks/tiers'
 import { useRouter } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import type { SubscriptionTier } from '@/types'
@@ -12,11 +11,12 @@ import { ROUTES, localePath } from '@/constants/routes'
 interface UpgradeModalProps {
   open: boolean
   onClose: () => void
+  tiers: SubscriptionTier[]
   currentTierId?: string
   requiredTier?: SubscriptionTier
 }
 
-export function UpgradeModal({ open, onClose, currentTierId, requiredTier }: UpgradeModalProps) {
+export function UpgradeModal({ open, onClose, tiers, currentTierId, requiredTier }: UpgradeModalProps) {
   const router = useRouter()
   const locale = useLocale()
 
@@ -37,9 +37,7 @@ export function UpgradeModal({ open, onClose, currentTierId, requiredTier }: Upg
               : 'Unlock this content by upgrading your subscription.'}
           </DialogDescription>
         </DialogHeader>
-
-        <TierComparisonTable tiers={mockTiers} currentTierId={currentTierId} onSelectTier={handleSelectTier} />
-
+        <TierComparisonTable tiers={tiers} currentTierId={currentTierId} onSelectTier={handleSelectTier} />
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>Maybe later</Button>
         </DialogFooter>
