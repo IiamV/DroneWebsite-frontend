@@ -88,8 +88,8 @@
     "advanced": "Advanced"
   },
   "catalog": {
-    "title": "Product Catalog",
-    "subtitle": "Browse drone components and use the compatibility filter to find parts that work together.",
+    "title": "Drone Builder",
+    "subtitle": "Pick components from the left panel — compatible parts are highlighted automatically. Parts with a 3D badge appear in the live preview.",
     "addToBuild": "Add to build",
     "inBuild": "In build",
     "backToCatalog": "Catalog",
@@ -100,7 +100,17 @@
     "noCompatible": "No compatible products listed.",
     "notFound": "Product not found.",
     "view3d": "3D View",
-    "viewImage": "Image"
+    "viewImage": "Image",
+    "builderComponents": "Components",
+    "searchComponents": "Search components…",
+    "clearAll": "Clear all",
+    "buildPreview": "Build Preview",
+    "noneSelected": "No components selected yet",
+    "componentSelected": "component selected",
+    "componentsSelected": "components selected",
+    "compatibleShowing": "showing compatible parts",
+    "modelLoaded": "model in view",
+    "modelsLoaded": "models in view"
   },
   "downloads": {
     "title": "Downloads",

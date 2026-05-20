@@ -1,7 +1,7 @@
-import { mockProducts } from '@/mocks/products'
-import { ProductGrid } from '@/components/features/catalog/ProductGrid'
+import { DroneBuilder } from '@/components/features/catalog/DroneBuilder'
 import { setRequestLocale } from 'next-intl/server'
-import { getTranslations } from 'next-intl/server'
+import { getProducts } from '@/lib/db/products'
+import { mockProducts } from '@/mocks/products'
 
 export default async function CatalogPage({
   params,
@@ -10,15 +10,17 @@ export default async function CatalogPage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations('catalog')
 
-  return (
-    <main className="max-w-7xl mx-auto px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-[var(--text-primary)] mb-2">{t('title')}</h1>
-        <p className="text-[var(--text-secondary)]">{t('subtitle')}</p>
-      </div>
-      <ProductGrid products={mockProducts} />
-    </main>
-  )
+  // Fall back to mock data if Supabase is not configured
+  let products = mockProducts
+  try {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      const fetched = await getProducts()
+      if (fetched.length > 0) products = fetched
+    }
+  } catch (err) {
+    console.error('[catalog] Supabase fetch failed, using mock data:', err)
+  }
+
+  return <DroneBuilder products={products} />
 }

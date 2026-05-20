@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { mockProducts } from '@/mocks/products'
+import { getProductBySlug, getCompatibleProducts } from '@/lib/db/products'
 import { ProductDetail } from '@/components/features/catalog/ProductDetail'
 import { ROUTES, localePath } from '@/constants/routes'
 import { setRequestLocale } from 'next-intl/server'
+import { NotFoundError } from '@/lib/fetch-utils'
 
 interface Props {
   params: Promise<{ locale: string; slug: string }>
@@ -11,7 +13,22 @@ interface Props {
 export default async function ProductDetailPage({ params }: Props) {
   const { locale, slug } = await params
   setRequestLocale(locale)
-  const product = mockProducts.find((p) => p.slug === slug)
+
+  let product = mockProducts.find((p) => p.slug === slug) ?? null
+  let compatibleProducts = product
+    ? mockProducts.filter((p) => product!.compatibleWith.includes(p.id))
+    : []
+
+  try {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      product = await getProductBySlug(slug)
+      compatibleProducts = await getCompatibleProducts(product.compatibleWith)
+    }
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      product = null
+    }
+  }
 
   if (!product) {
     return (
@@ -21,9 +38,6 @@ export default async function ProductDetailPage({ params }: Props) {
     )
   }
 
-  const compatibleProducts = mockProducts.filter((p) =>
-    product.compatibleWith.includes(p.id)
-  )
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
       <nav aria-label="Breadcrumb" className="mb-8 text-sm text-[var(--text-secondary)]">
@@ -42,12 +56,19 @@ export default async function ProductDetailPage({ params }: Props) {
           </li>
         </ol>
       </nav>
-
       <ProductDetail product={product} compatibleProducts={compatibleProducts} />
     </main>
   )
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  try {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      const { createClient } = await import('@/lib/supabase/server')
+      const supabase = await createClient()
+      const { data } = await supabase.from('products').select('slug')
+      return (data ?? []).map((p) => ({ slug: p.slug }))
+    }
+  } catch { /* fall through */ }
   return mockProducts.map((p) => ({ slug: p.slug }))
 }

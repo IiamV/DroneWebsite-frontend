@@ -88,8 +88,8 @@
     "advanced": "Nâng cao"
   },
   "catalog": {
-    "title": "Danh mục sản phẩm",
-    "subtitle": "Duyệt linh kiện drone và dùng bộ lọc tương thích để tìm các bộ phận phù hợp.",
+    "title": "Trình dựng Drone",
+    "subtitle": "Chọn linh kiện từ bảng bên trái — các bộ phận tương thích được tự động làm nổi bật. Linh kiện có huy hiệu 3D sẽ hiển thị trong bản xem trước trực tiếp.",
     "addToBuild": "Thêm vào bản dựng",
     "inBuild": "Đã thêm",
     "backToCatalog": "Danh mục",
@@ -100,7 +100,17 @@
     "noCompatible": "Không có sản phẩm tương thích.",
     "notFound": "Không tìm thấy sản phẩm.",
     "view3d": "Xem 3D",
-    "viewImage": "Hình ảnh"
+    "viewImage": "Hình ảnh",
+    "builderComponents": "Linh kiện",
+    "searchComponents": "Tìm linh kiện…",
+    "clearAll": "Xóa tất cả",
+    "buildPreview": "Xem trước bản dựng",
+    "noneSelected": "Chưa chọn linh kiện nào",
+    "componentSelected": "linh kiện đã chọn",
+    "componentsSelected": "linh kiện đã chọn",
+    "compatibleShowing": "hiển thị linh kiện tương thích",
+    "modelLoaded": "mô hình trong khung nhìn",
+    "modelsLoaded": "mô hình trong khung nhìn"
   },
   "downloads": {
     "title": "Tải xuống",
