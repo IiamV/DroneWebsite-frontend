@@ -22,14 +22,19 @@ export function LoginForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema),
   })
 
-  const onSubmit = async (_data: LoginInput) => {
+  const onSubmit = async (data: LoginInput) => {
     setIsSubmitting(true)
-    await new Promise((r) => setTimeout(r, 500))
-    login()
+    const { error } = await login(data.email, data.password)
+    setIsSubmitting(false)
+    if (error) {
+      setError('root', { message: error })
+      toast(error, 'error')
+      return
+    }
     toast(t('signIn') + '!', 'success')
     router.push(localePath(locale, ''))
   }
@@ -47,6 +52,10 @@ export function LoginForm() {
         <Input id="login-password" type="password" autoComplete="current-password" placeholder={t('passwordPlaceholder')} aria-invalid={!!errors.password} {...register('password')} />
         {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
       </div>
+
+      {errors.root && (
+        <p className="text-xs text-destructive text-center">{errors.root.message}</p>
+      )}
 
       <Button type="submit" variant="default" size="lg" disabled={isSubmitting} className="w-full">
         {isSubmitting ? t('signingIn') : t('signIn')}

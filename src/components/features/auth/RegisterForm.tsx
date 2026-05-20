@@ -11,25 +11,34 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/Toast'
-import { useAuth } from '@/components/layout/AuthProvider'
+import { createClient } from '@/lib/supabase/client'
 import { ROUTES, localePath } from '@/constants/routes'
 
 export function RegisterForm() {
   const t = useTranslations('auth')
   const locale = useLocale()
   const { toast } = useToast()
-  const { login } = useAuth()
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterInput>({
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<RegisterInput>({
     resolver: zodResolver(RegisterSchema),
   })
 
-  const onSubmit = async (_data: RegisterInput) => {
+  const onSubmit = async (data: RegisterInput) => {
     setIsSubmitting(true)
-    await new Promise((r) => setTimeout(r, 500))
-    login()
+    const supabase = createClient()
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: { data: { name: data.name } },
+    })
+    setIsSubmitting(false)
+    if (error) {
+      setError('root', { message: error.message })
+      toast(error.message, 'error')
+      return
+    }
     toast(t('createAccount') + '!', 'success')
     router.push(localePath(locale, ''))
   }
@@ -53,6 +62,10 @@ export function RegisterForm() {
         <Input id="reg-password" type="password" autoComplete="new-password" placeholder={t('minPassword')} aria-invalid={!!errors.password} {...register('password')} />
         {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
       </div>
+
+      {errors.root && (
+        <p className="text-xs text-destructive text-center">{errors.root.message}</p>
+      )}
 
       <Button type="submit" variant="default" size="lg" disabled={isSubmitting} className="w-full">
         {isSubmitting ? t('creatingAccount') : t('createAccount')}
