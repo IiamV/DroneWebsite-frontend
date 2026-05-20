@@ -1,4 +1,5 @@
 import { mockTiers } from '@/mocks/tiers'
+import { getTiers } from '@/lib/db/tiers'
 import { VNPayCheckoutForm } from '@/components/features/subscription/VNPayCheckoutForm'
 import { Badge } from '@/components/ui/badge'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
@@ -11,7 +12,13 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   const { locale, tierId } = await params
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: 'checkout' })
-  const tier = mockTiers.find((t) => t.id === tierId)
+
+  let tiers = mockTiers
+  try {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL) tiers = await getTiers()
+  } catch { /* use mock */ }
+
+  const tier = tiers.find((t) => t.id === tierId)
 
   if (!tier || tier.price === 0) {
     return (
@@ -26,7 +33,9 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <h1 className="text-2xl font-extrabold text-[var(--text-primary)]">{t('title')}</h1>
-          <Badge variant="outline" style={{ borderColor: tier.badgeColor, color: tier.badgeColor }}>{tier.badgeLabel}</Badge>
+          <Badge variant="outline" style={{ borderColor: tier.badgeColor, color: tier.badgeColor }}>
+            {tier.badgeLabel}
+          </Badge>
         </div>
         <p className="text-[var(--text-secondary)] text-sm">
           {t('subscribingTo', { plan: tier.name })}
@@ -39,6 +48,12 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   )
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  try {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      const tiers = await getTiers()
+      return tiers.filter((t) => t.price > 0).map((t) => ({ tierId: t.id }))
+    }
+  } catch { /* fall through */ }
   return mockTiers.filter((t) => t.price > 0).map((t) => ({ tierId: t.id }))
 }
