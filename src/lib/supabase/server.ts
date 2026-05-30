@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { Database } from '@/types/database.types'
 
-export async function createClient() {
+export async function createClient() {1
   const cookieStore = await cookies()
 
   return createServerClient<Database>(

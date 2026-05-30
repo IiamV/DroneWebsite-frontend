@@ -40,7 +40,7 @@ export async function getCourses(): Promise<Course[]> {
     if (courseErr) throw new Error(courseErr.message)
     if (!courseRows?.length) return []
 
-    const courseIds = courseRows.map((c) => c.id)
+    const courseIds = courseRows.map((c: any) => c.id)
     const { data: moduleRows, error: moduleErr } = await supabase
       .from('course_modules')
       .select('*')
@@ -49,9 +49,9 @@ export async function getCourses(): Promise<Course[]> {
 
     if (moduleErr) throw new Error(moduleErr.message)
 
-    return courseRows.map((c) => {
+    return courseRows.map((c: any) => {
       const modules = (moduleRows ?? [])
-        .filter((m) => m.course_id === c.id)
+        .filter((m: any) => m.course_id === c.id)
         .map((m) => rowToModule(m as Record<string, unknown>))
       return rowToCourse(c as Record<string, unknown>, modules)
     })
@@ -74,7 +74,7 @@ export async function getCourseBySlug(slug: string): Promise<Course> {
     const { data: moduleRows, error: moduleErr } = await supabase
       .from('course_modules')
       .select('*')
-      .eq('course_id', courseRow.id)
+      .eq('course_id', (courseRow as any).id)
       .order('order', { ascending: true })
 
     if (moduleErr) throw new Error(moduleErr.message)
@@ -91,7 +91,7 @@ export async function getCourseSlugs(): Promise<string[]> {
     const supabase = await createClient()
     const { data, error } = await supabase.from('courses').select('slug')
     if (error) throw new Error(error.message)
-    return (data ?? []).map((r) => r.slug)
+    return (data ?? []).map((r: any) => r.slug)
   } catch (err) {
     throw toAppError(err)
   }

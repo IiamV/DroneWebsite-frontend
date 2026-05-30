@@ -224,6 +224,8 @@ export interface Database {
           tags: string[]
           affiliate_url: string | null
           model_url: string | null
+          snap_points: Json
+          pads: Json
           created_at: string
         }
         Insert: {
@@ -242,6 +244,7 @@ export interface Database {
           tags: string[]
           affiliate_url?: string | null
           model_url?: string | null
+          snap_points?: Json
           created_at?: string
         }
         Update: {
@@ -260,6 +263,7 @@ export interface Database {
           tags?: string[]
           affiliate_url?: string | null
           model_url?: string | null
+          snap_points?: Json
           created_at?: string
         }
       }
