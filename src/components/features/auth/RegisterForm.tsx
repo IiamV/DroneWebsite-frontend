@@ -40,7 +40,8 @@ export function RegisterForm() {
       return
     }
     toast(t('createAccount') + '!', 'success')
-    router.push(localePath(locale, ''))
+    // Redirect to login — user needs to confirm email before signing in
+    router.push(localePath(locale, ROUTES.AUTH_LOGIN) + '?registered=1')
   }
 
   return (

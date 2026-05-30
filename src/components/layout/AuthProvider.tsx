@@ -8,6 +8,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 interface AuthContextValue {
   user: AppUser | null
   supabaseUser: SupabaseUser | null
+  emailConfirmed: boolean
   login: (email: string, password: string) => Promise<{ error: string | null }>
   logout: () => Promise<void>
   loading: boolean
@@ -58,9 +59,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase])
 
   const user = supabaseUser ? supabaseUserToAppUser(supabaseUser) : null
+  const emailConfirmed = !!(supabaseUser?.email_confirmed_at)
 
   return (
-    <AuthContext.Provider value={{ user, supabaseUser, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, supabaseUser, emailConfirmed, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   )
