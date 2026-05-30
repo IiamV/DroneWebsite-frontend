@@ -7,16 +7,20 @@ import { ProfileCard } from '@/components/features/profile/ProfileCard'
 import { TierBadge } from '@/components/features/profile/TierBadge'
 import { SubscriptionStatus } from '@/components/features/profile/SubscriptionStatus'
 import { CancelSubscriptionButton } from '@/components/features/profile/CancelSubscriptionButton'
+import { EmailConfirmationStatus } from '@/components/features/profile/EmailConfirmationStatus'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { localePath, ROUTES } from '@/constants/routes'
 import type { User } from '@/types'
 
 export default async function ProfilePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ payment?: string }>
 }) {
   const { locale } = await params
+  const { payment } = await searchParams
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: 'profile' })
 
@@ -58,7 +62,23 @@ export default async function ProfilePage({
   return (
     <main className="max-w-2xl mx-auto px-4 py-12 space-y-6">
       <h1 className="text-2xl font-bold text-[var(--text-primary)]">{t('title')}</h1>
+
+      {/* Payment success banner */}
+      {payment === 'success' && (
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+          <span className="text-green-500 text-lg" aria-hidden="true">✓</span>
+          <div>
+            <p className="text-sm font-semibold text-green-600 dark:text-green-400">Payment successful!</p>
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5">Your subscription has been activated.</p>
+          </div>
+        </div>
+      )}
+
       <ProfileCard user={user} locale={locale} />
+      <EmailConfirmationStatus
+        email={authUser.email ?? ''}
+        confirmed={!!authUser.email_confirmed_at}
+      />
       <TierBadge tier={tier} locale={locale} />
       {subscription ? (
         <>
