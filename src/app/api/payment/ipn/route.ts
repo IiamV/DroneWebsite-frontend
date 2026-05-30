@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
     const end = new Date(now)
     end.setMonth(end.getMonth() + 1)
 
-    const { error } = await admin.from('subscriptions').insert({
+    const { error } = await (admin.from('subscriptions') as any).insert({
       user_id: user.id,
       tier_id: tierId,
       status: 'active',

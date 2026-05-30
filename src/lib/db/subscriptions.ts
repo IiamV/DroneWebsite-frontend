@@ -65,14 +65,14 @@ export async function createSubscription(
     end.setMonth(end.getMonth() + 1) // 1 month billing cycle
 
     // Cancel any existing active subscriptions first
-    await supabase
-      .from('subscriptions')
+    await (supabase
+      .from('subscriptions') as any)
       .update({ status: 'cancelled' })
       .eq('user_id', user.id)
       .eq('status', 'active')
 
-    const { data, error } = await supabase
-      .from('subscriptions')
+    const { data, error } = await (supabase
+      .from('subscriptions') as any)
       .insert({
         user_id: user.id,
         tier_id: tierId,
@@ -98,8 +98,8 @@ export async function cancelSubscription(): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
 
-    const { error } = await supabase
-      .from('subscriptions')
+    const { error } = await (supabase
+      .from('subscriptions') as any)
       .update({ status: 'cancelled' })
       .eq('user_id', user.id)
       .eq('status', 'active')
