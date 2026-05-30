@@ -12,6 +12,8 @@ import { Badge } from '@/components/ui/badge'
 import { createFocusTrap } from '@/lib/focus-trap'
 import { ROUTES, localePath } from '@/constants/routes'
 import { routing } from '@/i18n/routing'
+import { useSubscription } from '@/hooks/useSubscription'
+import { mockTiers } from '@/mocks/tiers'
 
 const TIER_COLOR = '#f59e0b'
 
@@ -20,6 +22,7 @@ export function Navbar() {
   const locale = useLocale()
   const { theme, toggleTheme } = useTheme()
   const { user, logout } = useAuth()
+  const { tier } = useSubscription(mockTiers)
   const pathname = usePathname()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
@@ -68,7 +71,11 @@ export function Navbar() {
 
   const AuthDesktop = user ? (
     <>
-      <Badge variant="outline" style={{ borderColor: TIER_COLOR, color: TIER_COLOR }}>Pro</Badge>
+      {tier && tier.tierRank > 0 && (
+        <Badge variant="outline" style={{ borderColor: tier.badgeColor, color: tier.badgeColor }}>
+          {tier.badgeLabel}
+        </Badge>
+      )}
       <Link
         href={localePath(locale, ROUTES.PROFILE)}
         className="inline-flex min-h-[44px] min-w-[44px] items-center rounded-md px-3 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
@@ -97,7 +104,11 @@ export function Navbar() {
   const AuthMobile = user ? (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2 px-3 py-2">
-        <Badge variant="outline" style={{ borderColor: TIER_COLOR, color: TIER_COLOR }}>Pro</Badge>
+        {tier && tier.tierRank > 0 && (
+          <Badge variant="outline" style={{ borderColor: tier.badgeColor, color: tier.badgeColor }}>
+            {tier.badgeLabel}
+          </Badge>
+        )}
         <span className="text-sm font-medium text-[var(--text-primary)]">{user.name}</span>
       </div>
       <Link
