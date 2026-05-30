@@ -1,6 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
 import { toAppError, NotFoundError } from '@/lib/fetch-utils'
-import type { Product } from '@/types'
+import type { Product, Pad } from '@/types'
+
+function parsePads(raw: unknown): Pad[] {
+  if (!Array.isArray(raw)) return []
+  return raw.map((p: Record<string, unknown>) => ({
+    id: p.id as string,
+    label: p.label as string,
+    type: p.type as Pad['type'],
+    color: p.color as string,
+  }))
+}
 
 function rowToProduct(row: Record<string, unknown>): Product {
   return {
@@ -19,6 +29,7 @@ function rowToProduct(row: Record<string, unknown>): Product {
     tags: (row.tags as string[]) ?? [],
     affiliateUrl: (row.affiliate_url as string | null) ?? null,
     modelUrl: (row.model_url as string | null) ?? null,
+    pads: parsePads(row.pads),
     createdAt: new Date(row.created_at as string),
   }
 }

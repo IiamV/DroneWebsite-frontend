@@ -59,6 +59,15 @@ export interface Course {
   createdAt: Date
 }
 
+export type PadType = 'power' | 'signal' | 'phase' | 'data'
+
+export interface Pad {
+  id: string
+  label: string
+  type: PadType
+  color: string
+}
+
 export interface Product {
   id: string
   slug: string
@@ -75,6 +84,8 @@ export interface Product {
   tags: string[]
   affiliateUrl: string | null
   modelUrl: string | null
+  /** Electrical connection pads (GND, +5V, DSHOT, Phase A/B/C, etc.) */
+  pads: Pad[]
   createdAt: Date
 }
 
@@ -104,4 +115,59 @@ export interface DocPage {
 export interface AccessResult {
   allowed: boolean
   reason: string
+}
+
+// ── Drone Builds ───────────────────────────────────────────────────────────
+
+export type BuildDifficulty = 'beginner' | 'intermediate' | 'advanced'
+
+export interface BuildStep {
+  order: number
+  title: string
+  description: string
+  /** Optional product IDs relevant to this step */
+  productIds: string[]
+  /** Optional wiring note for this step */
+  wiringNote?: string
+}
+
+export interface BuildWire {
+  fromComponent: string   // e.g. "ESC"
+  fromPad: string         // e.g. "S1"
+  toComponent: string     // e.g. "Flight Controller"
+  toPad: string           // e.g. "M1"
+  label: string           // e.g. "Motor 1 signal (DSHOT)"
+  color: string           // hex
+}
+
+export interface DroneBuild {
+  id: string
+  slug: string
+  name: string
+  description: string
+  thumbnailUrl: string
+  difficulty: BuildDifficulty
+  estimatedCost: number        // USD
+  estimatedCostVnd: number
+  flightTime: string           // e.g. "8–10 min"
+  useCase: string              // e.g. "5-inch freestyle"
+  /** Ordered list of product IDs in this build */
+  productIds: string[]
+  steps: BuildStep[]
+  wires: BuildWire[]
+  /** Optional GLB model URL for the assembled drone */
+  modelUrl: string | null
+  /** Performance statistics */
+  stats?: {
+    topSpeedKmh?: number          // estimated top speed in km/h
+    totalWeightG?: number         // total all-up weight in grams
+    maxPayloadG?: number          // max additional payload in grams
+    thrustToWeightRatio?: number  // e.g. 4.2 (×g)
+    motorCount?: number           // number of motors
+    propSizeInch?: number         // propeller diameter in inches
+    batteryCell?: number          // e.g. 4 for 4S, 6 for 6S
+    maxRangeKm?: number           // estimated max range in km
+    hoverThrustPct?: number       // throttle % needed to hover (efficiency indicator)
+  }
+  createdAt: Date
 }
