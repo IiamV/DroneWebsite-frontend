@@ -3,8 +3,6 @@ import { FeaturesSection } from '@/components/features/home/FeaturesSection'
 import { CTASection } from '@/components/features/home/CTASection'
 import { setRequestLocale } from 'next-intl/server'
 
-// Fully static — no client JS on the homepage.
-// HeroSection is a server component with a CSS-only drone animation.
 export default async function HomePage({
   params,
 }: {
@@ -15,8 +13,8 @@ export default async function HomePage({
   return (
     <>
       <HeroSection />
-      <FeaturesSection />
-      <CTASection />
+      {/* <FeaturesSection />
+      <CTASection /> */}
     </>
   )
 }
