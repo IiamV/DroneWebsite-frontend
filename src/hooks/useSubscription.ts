@@ -75,8 +75,9 @@ export function useSubscription(allTiers: SubscriptionTier[]): UseSubscriptionRe
   const tierRank = tier?.tierRank ?? 0
 
   function hasAccess(requiredTierId: string, tiers: SubscriptionTier[]): boolean {
+    if (requiredTierId === 'free') return true
     const required = tiers.find((t) => t.id === requiredTierId)
-    if (!required) return true // unknown tier = free
+    if (!required) return false
     return tierRank >= required.tierRank
   }
 
