@@ -48,7 +48,15 @@ export function LoginForm() {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="login-password">{t('password')}</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="login-password">{t('password')}</Label>
+          <Link
+            href={localePath(locale, '/auth/forgot-password')}
+            className="text-xs text-[var(--accent)] underline-offset-4 hover:underline"
+          >
+            {t('forgotPassword')}
+          </Link>
+        </div>
         <Input id="login-password" type="password" autoComplete="current-password" placeholder={t('passwordPlaceholder')} aria-invalid={!!errors.password} {...register('password')} />
         {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
       </div>
