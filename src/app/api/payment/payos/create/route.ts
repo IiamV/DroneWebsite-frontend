@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as { tierId: string; locale?: string }
     const checkout = await createSubscriptionCheckout({
-      provider: 'vnpay',
+      provider: 'payos',
       tierId: body.tierId,
       locale: body.locale,
       request,

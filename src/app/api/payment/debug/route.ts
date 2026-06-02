@@ -2,10 +2,10 @@
  * Debug endpoint — returns the VNPay URL as JSON without redirecting.
  * Remove before production.
  */
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { buildPaymentUrl, verifyParams } from '@/lib/vnpay'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const tmnCode = process.env.VNP_TMN_CODE!.trim()
 
   const orderRef  = `debugtest${Date.now()}`

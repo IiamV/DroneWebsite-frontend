@@ -1,17 +1,21 @@
 import { createClient } from '@/lib/supabase/server'
 import { toAppError } from '@/lib/fetch-utils'
+import type { Tables, TablesUpdate } from '@/types/database.types'
 import type { Subscription, SubscriptionTier } from '@/types'
 
-function rowToSubscription(row: Record<string, unknown>): Subscription {
+type SubscriptionRow = Tables<'subscriptions'>
+type SubscriptionUpdate = TablesUpdate<'subscriptions'>
+
+function rowToSubscription(row: SubscriptionRow): Subscription {
   return {
-    id: row.id as string,
-    userId: row.user_id as string,
-    tierId: row.tier_id as string,
+    id: row.id,
+    userId: row.user_id,
+    tierId: row.tier_id,
     status: row.status as Subscription['status'],
-    startDate: new Date(row.start_date as string),
-    endDate: new Date(row.end_date as string),
-    vnpayTransactionId: (row.vnpay_transaction_id as string | null) ?? null,
-    createdAt: new Date(row.created_at as string),
+    startDate: new Date(row.start_date),
+    endDate: new Date(row.end_date),
+    vnpayTransactionId: row.vnpay_transaction_id,
+    createdAt: new Date(row.created_at),
   }
 }
 
@@ -22,17 +26,12 @@ export async function getUserSubscription(): Promise<Subscription | null> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return null
 
-    const { data, error } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+    const { data, error } = await supabase.rpc('refresh_user_subscription_status', {
+      p_user_id: user.id,
+    })
 
     if (error) throw new Error(error.message)
-    return data ? rowToSubscription(data as Record<string, unknown>) : null
+    return data ? rowToSubscription(data) : null
   } catch (err) {
     throw toAppError(err)
   }
@@ -50,47 +49,6 @@ export async function getUserTier(allTiers: SubscriptionTier[]): Promise<Subscri
   }
 }
 
-/** Create a new subscription for the authenticated user. */
-export async function createSubscription(
-  tierId: string,
-  vnpayTransactionId: string | null = null
-): Promise<Subscription> {
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Not authenticated')
-
-    const now = new Date()
-    const end = new Date(now)
-    end.setMonth(end.getMonth() + 1) // 1 month billing cycle
-
-    // Cancel any existing active subscriptions first
-    await (supabase
-      .from('subscriptions') as any)
-      .update({ status: 'cancelled' })
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-
-    const { data, error } = await (supabase
-      .from('subscriptions') as any)
-      .insert({
-        user_id: user.id,
-        tier_id: tierId,
-        status: 'active',
-        start_date: now.toISOString().split('T')[0],
-        end_date: end.toISOString().split('T')[0],
-        vnpay_transaction_id: vnpayTransactionId,
-      })
-      .select()
-      .single()
-
-    if (error || !data) throw new Error(error?.message ?? 'Failed to create subscription')
-    return rowToSubscription(data as Record<string, unknown>)
-  } catch (err) {
-    throw toAppError(err)
-  }
-}
-
 /** Cancel the active subscription for the authenticated user. */
 export async function cancelSubscription(): Promise<void> {
   try {
@@ -98,9 +56,10 @@ export async function cancelSubscription(): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
 
-    const { error } = await (supabase
-      .from('subscriptions') as any)
-      .update({ status: 'cancelled' })
+    const payload: SubscriptionUpdate = { status: 'cancelled' }
+    const { error } = await supabase
+      .from('subscriptions')
+      .update(payload)
       .eq('user_id', user.id)
       .eq('status', 'active')
 
