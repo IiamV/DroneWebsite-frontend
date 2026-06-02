@@ -1,6 +1,4 @@
 import { HeroSection } from '@/components/features/home/HeroSection'
-import { FeaturesSection } from '@/components/features/home/FeaturesSection'
-import { CTASection } from '@/components/features/home/CTASection'
 import { setRequestLocale } from 'next-intl/server'
 
 export default async function HomePage({
@@ -10,11 +8,5 @@ export default async function HomePage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  return (
-    <>
-      <HeroSection />
-      {/* <FeaturesSection />
-      <CTASection /> */}
-    </>
-  )
+  return <HeroSection />
 }

@@ -9,6 +9,8 @@ export const ROUTES = {
   CATALOG: '/catalog',
   DOWNLOADS: '/downloads',
   DOCS: '/docs',
+  UPDATES: '/updates',
+  FAQ: '/faq',
   PRICING: '/subscription',
 } as const
 

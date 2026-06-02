@@ -13,16 +13,18 @@ import { createFocusTrap } from '@/lib/focus-trap'
 import { ROUTES, localePath } from '@/constants/routes'
 import { routing } from '@/i18n/routing'
 import { useSubscription } from '@/hooks/useSubscription'
-import { mockTiers } from '@/mocks/tiers'
+import type { SubscriptionTier } from '@/types'
 
-const TIER_COLOR = '#f59e0b'
+interface NavbarProps {
+  tiers: SubscriptionTier[]
+}
 
-export function Navbar() {
+export function Navbar({ tiers }: NavbarProps) {
   const t = useTranslations('nav')
   const locale = useLocale()
   const { theme, toggleTheme } = useTheme()
   const { user, logout } = useAuth()
-  const { tier } = useSubscription(mockTiers)
+  const { tier } = useSubscription(tiers)
   const pathname = usePathname()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
@@ -35,6 +37,8 @@ export function Navbar() {
     { href: localePath(locale, ROUTES.CATALOG), label: t('catalog') },
     { href: localePath(locale, ROUTES.DOWNLOADS), label: t('downloads') },
     { href: localePath(locale, ROUTES.DOCS), label: t('docs') },
+    { href: localePath(locale, ROUTES.UPDATES), label: t('updates') },
+    { href: localePath(locale, ROUTES.FAQ), label: t('faq') },
     { href: localePath(locale, ROUTES.PRICING), label: t('pricing') },
   ]
 
