@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import { CompatibilityPanel } from './CompatibilityPanel'
 import { Product3DViewer } from './Product3DViewer'
+import { mediaUrl } from '@/lib/media-url'
 import type { Product } from '@/types'
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '@/constants/catalog'
 
@@ -14,8 +15,6 @@ interface ProductDetailProps {
   product: Product
   compatibleProducts: Product[]
 }
-
-const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 
 /** Full-size image with icon fallback on error */
 function ProductImage({ src, alt, fallbackSize = 80 }: { src: string; alt: string; fallbackSize?: number }) {
@@ -29,7 +28,7 @@ function ProductImage({ src, alt, fallbackSize = 80 }: { src: string; alt: strin
   }
   return (
     <Image
-      src={`${base}${src}`}
+      src={mediaUrl(src)}
       alt={alt}
       fill
       sizes="(max-width: 1024px) 100vw, 50vw"
@@ -52,7 +51,7 @@ function ThumbImage({ src, alt }: { src: string; alt: string }) {
   }
   return (
     <Image
-      src={`${base}${src}`}
+      src={mediaUrl(src)}
       alt={alt}
       fill
       sizes="64px"

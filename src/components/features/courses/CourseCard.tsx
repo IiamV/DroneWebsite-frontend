@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { Cpu, LockKeyhole, Unlock } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
+import { mediaUrl } from '@/lib/media-url'
 import type { Course } from '@/types'
 import { ROUTES, localePath } from '@/constants/routes'
 
@@ -20,14 +21,12 @@ interface CourseCardProps {
   course: Course
 }
 
-const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
-
 function CourseThumbnail({ src, alt }: { src: string; alt: string }) {
   const [errored, setErrored] = useState(false)
   if (errored) return <Cpu size={40} aria-hidden="true" />
   return (
     <Image
-      src={`${base}${src}`}
+      src={mediaUrl(src)}
       alt={alt}
       fill
       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

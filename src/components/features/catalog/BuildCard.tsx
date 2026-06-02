@@ -6,6 +6,7 @@ import { Clock, DollarSign, Wrench, ChevronRight } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { ROUTES, localePath } from '@/constants/routes'
+import { mediaUrl } from '@/lib/media-url'
 import type { DroneBuild } from '@/types'
 
 const DIFFICULTY_COLORS: Record<DroneBuild['difficulty'], string> = {
@@ -13,8 +14,6 @@ const DIFFICULTY_COLORS: Record<DroneBuild['difficulty'], string> = {
   intermediate: '#f59e0b',
   advanced:     '#ef4444',
 }
-
-const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 
 interface BuildCardProps {
   build: DroneBuild
@@ -36,7 +35,7 @@ export function BuildCard({ build, locale: localeProp }: BuildCardProps) {
       <div className="relative h-44 bg-[var(--bg-primary)] overflow-hidden">
         {build.thumbnailUrl && !imgErr ? (
           <Image
-            src={`${base}${build.thumbnailUrl}`}
+            src={mediaUrl(build.thumbnailUrl)}
             alt={build.name}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

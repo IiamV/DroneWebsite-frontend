@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { ROUTES, localePath } from '@/constants/routes'
+import { mediaUrl } from '@/lib/media-url'
 import type { DroneBuild, Product } from '@/types'
 
 const Product3DViewer = dynamic(
@@ -30,15 +31,13 @@ const CATEGORY_COLORS: Record<Product['category'], string> = {
   battery: '#ef4444', camera: '#ec4899', complete_drone: '#0ea5e9',
 }
 
-const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
-
 // ── Component thumbnail ────────────────────────────────────────────────────
 function ProductThumb({ product }: { product: Product }) {
   const [err, setErr] = useState(false)
   return (
     <div className="relative w-12 h-12 shrink-0 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] overflow-hidden flex items-center justify-center">
       {product.thumbnailUrl && !err ? (
-        <Image src={`${base}${product.thumbnailUrl}`} alt={product.name} fill sizes="48px"
+        <Image src={mediaUrl(product.thumbnailUrl)} alt={product.name} fill sizes="48px"
           className="object-cover" onError={() => setErr(true)} />
       ) : (
         <Package size={18} className="text-[var(--text-secondary)]" aria-hidden="true" />
@@ -212,7 +211,7 @@ export function BuildDetail({ build, products }: BuildDetailProps) {
               <Product3DViewer modelUrl={build.modelUrl} productName={build.name} />
             ) : build.thumbnailUrl ? (
               <Image
-                src={`${base}${build.thumbnailUrl}`}
+                src={mediaUrl(build.thumbnailUrl)}
                 alt={build.name}
                 fill
                 sizes="(max-width: 1024px) 100vw, 384px"

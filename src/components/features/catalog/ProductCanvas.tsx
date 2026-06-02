@@ -4,10 +4,10 @@ import { useRef, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF, OrbitControls, Environment } from '@react-three/drei'
 import * as THREE from 'three'
+import { mediaUrl } from '@/lib/media-url'
 
 function Model({ url }: { url: string }) {
-  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
-  const { scene } = useGLTF(`${base}${url}`)
+  const { scene } = useGLTF(mediaUrl(url))
   const pivotRef = useRef<THREE.Group>(null)  // outer group — spins
   const meshRef = useRef<THREE.Group>(null)   // inner group — offset to center
   const { camera } = useThree()
