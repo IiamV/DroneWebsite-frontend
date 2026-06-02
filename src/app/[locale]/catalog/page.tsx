@@ -1,34 +1,29 @@
-import { setRequestLocale } from 'next-intl/server'
-import { mockBuilds } from '@/mocks/builds'
+import { getTranslations } from 'next-intl/server'
+import { unstable_noStore as noStore } from 'next/cache'
 import { getBuilds } from '@/lib/db/builds'
 import { BuildsGrid } from '@/components/features/catalog/BuildsGrid'
+
+export const dynamic = 'force-dynamic'
 
 export default async function CatalogPage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
+  noStore()
   const { locale } = await params
-  setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: 'builds' })
 
-  let builds = mockBuilds
-  try {
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      const fetched = await getBuilds()
-      if (fetched.length > 0) builds = fetched
-    }
-  } catch {
-    // Supabase unavailable — use mock data
-  }
+  const builds = await getBuilds(locale)
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-12">
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-[var(--text-primary)] mb-2">
-          Drone Builds
+          {t('title')}
         </h1>
         <p className="text-[var(--text-secondary)] max-w-2xl">
-          Curated complete drone builds with step-by-step assembly guides, component lists, and wiring diagrams.
+          {t('subtitle')}
         </p>
       </div>
       <BuildsGrid builds={builds} locale={locale} />

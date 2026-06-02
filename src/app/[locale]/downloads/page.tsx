@@ -1,23 +1,20 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
+import { unstable_noStore as noStore } from 'next/cache'
 import { getDownloads } from '@/lib/db/downloads'
-import { mockDownloads } from '@/mocks/downloads'
 import { DownloadsPageClient } from '@/components/features/downloads/DownloadsPageClient'
+
+export const dynamic = 'force-dynamic'
 
 export default async function DownloadsPage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
+  noStore()
   const { locale } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations('downloads')
+  const t = await getTranslations({ locale, namespace: 'downloads' })
 
-  let downloads = mockDownloads
-  try {
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      downloads = await getDownloads()
-    }
-  } catch { /* use mock */ }
+  const downloads = await getDownloads()
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-12">

@@ -42,7 +42,17 @@ export interface CourseModule {
   title: string
   videoUrl: string | null
   content: string
+  lessonType: 'lesson' | 'quiz' | 'project'
+  quiz: CourseQuizQuestion[]
   order: number
+}
+
+export interface CourseQuizQuestion {
+  id: string
+  question: string
+  options: string[]
+  answerIndex: number
+  explanation: string
 }
 
 export interface Course {
@@ -57,6 +67,18 @@ export interface Course {
   requiredTier: string
   modules: CourseModule[]
   createdAt: Date
+}
+
+export interface CompletedCourse {
+  id: string
+  slug: string
+  title: string
+  description: string
+  category: string
+  difficulty: Course['difficulty']
+  completedModules: number
+  progressPercent: number
+  completedAt: Date
 }
 
 export type PadType = 'power' | 'signal' | 'phase' | 'data'

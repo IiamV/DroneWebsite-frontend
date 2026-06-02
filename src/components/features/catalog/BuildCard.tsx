@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Clock, DollarSign, Wrench, ChevronRight } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { ROUTES, localePath } from '@/constants/routes'
 import type { DroneBuild } from '@/types'
@@ -12,12 +12,6 @@ const DIFFICULTY_COLORS: Record<DroneBuild['difficulty'], string> = {
   beginner:     '#22c55e',
   intermediate: '#f59e0b',
   advanced:     '#ef4444',
-}
-
-const DIFFICULTY_LABELS: Record<DroneBuild['difficulty'], string> = {
-  beginner:     'Beginner',
-  intermediate: 'Intermediate',
-  advanced:     'Advanced',
 }
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
@@ -30,6 +24,7 @@ interface BuildCardProps {
 export function BuildCard({ build, locale: localeProp }: BuildCardProps) {
   const localeHook = useLocale()
   const locale = localeProp ?? localeHook
+  const t = useTranslations('builds')
   const [imgErr, setImgErr] = useState(false)
 
   return (
@@ -58,7 +53,7 @@ export function BuildCard({ build, locale: localeProp }: BuildCardProps) {
           className="absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-full text-white"
           style={{ backgroundColor: DIFFICULTY_COLORS[build.difficulty] }}
         >
-          {DIFFICULTY_LABELS[build.difficulty]}
+          {t(build.difficulty)}
         </span>
       </div>
 
@@ -85,7 +80,7 @@ export function BuildCard({ build, locale: localeProp }: BuildCardProps) {
           </span>
           <span className="flex items-center gap-1">
             <Wrench size={11} aria-hidden="true" />
-            {build.steps.length} steps
+            {build.steps.length} {t('assemblySteps')}
           </span>
         </div>
 
@@ -95,7 +90,7 @@ export function BuildCard({ build, locale: localeProp }: BuildCardProps) {
             {build.useCase}
           </span>
           <span className="flex items-center gap-0.5 text-[11px] font-semibold text-[var(--accent)] group-hover:gap-1.5 transition-all">
-            View build <ChevronRight size={13} aria-hidden="true" />
+            {t('view3d')} <ChevronRight size={13} aria-hidden="true" />
           </span>
         </div>
       </div>

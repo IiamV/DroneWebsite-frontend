@@ -6,28 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
 import { ROUTES, localePath } from '@/constants/routes'
-
-const CATEGORY_COLORS: Record<Product['category'], string> = {
-  frame: '#6366f1',
-  motor: '#f59e0b',
-  esc: '#10b981',
-  flight_controller: '#3b82f6',
-  propeller: '#8b5cf6',
-  battery: '#ef4444',
-  camera: '#ec4899',
-  complete_drone: '#0ea5e9',
-}
-
-const CATEGORY_LABELS: Record<Product['category'], string> = {
-  frame: 'Frame',
-  motor: 'Motor',
-  esc: 'ESC',
-  flight_controller: 'Flight Controller',
-  propeller: 'Propeller',
-  battery: 'Battery',
-  camera: 'Camera',
-  complete_drone: 'Complete Drone',
-}
+import { CATEGORY_COLORS, CATEGORY_LABELS } from '@/constants/catalog'
 
 interface CompatibilityPanelProps {
   compatibleProducts: Product[]

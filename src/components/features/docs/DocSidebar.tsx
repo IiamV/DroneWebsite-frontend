@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { cn } from '@/lib/utils'
+import { localePath } from '@/constants/routes'
 import type { DocPage } from '@/types'
 
 interface DocSidebarProps {
@@ -34,10 +35,11 @@ function buildTree(docs: DocPage[]): TreeNode[] {
 interface NavItemProps {
   node: TreeNode
   currentSlug: string[]
+  locale: string
 }
 
-function NavItem({ node, currentSlug }: NavItemProps) {
-  const href = '/docs/' + node.doc.slug.join('/')
+function NavItem({ node, currentSlug, locale }: NavItemProps) {
+  const href = localePath(locale, '/docs/' + node.doc.slug.join('/'))
   const isActive = node.doc.slug.join('/') === currentSlug.join('/')
   const hasChildren = node.children.length > 0
   const isParentOfActive =
@@ -82,7 +84,7 @@ function NavItem({ node, currentSlug }: NavItemProps) {
       {hasChildren && open && (
         <ul className="mt-0.5 ml-5 space-y-0.5 border-l border-[var(--border)] pl-2">
           {node.children.map((child) => (
-            <NavItem key={child.doc.id} node={child} currentSlug={currentSlug} />
+            <NavItem key={child.doc.id} node={child} currentSlug={currentSlug} locale={locale} />
           ))}
         </ul>
       )}
@@ -93,6 +95,7 @@ function NavItem({ node, currentSlug }: NavItemProps) {
 export function DocSidebar({ docs, currentSlug }: DocSidebarProps) {
   const tree = buildTree(docs)
   const t = useTranslations('docs')
+  const locale = useLocale()
 
   return (
     <nav aria-label="Documentation navigation">
@@ -101,7 +104,7 @@ export function DocSidebar({ docs, currentSlug }: DocSidebarProps) {
       </p>
       <ul className="space-y-0.5">
         {tree.map((node) => (
-          <NavItem key={node.doc.id} node={node} currentSlug={currentSlug} />
+          <NavItem key={node.doc.id} node={node} currentSlug={currentSlug} locale={locale} />
         ))}
       </ul>
     </nav>

@@ -1,26 +1,29 @@
-import { mockDocs } from '@/mocks/docs'
-import { getDocs } from '@/lib/db/docs'
+import { getDocs } from '@/lib/docs'
 import { DocSidebar } from '@/components/features/docs/DocSidebar'
 import { DocContent } from '@/components/features/docs/DocContent'
 import { DocBreadcrumb } from '@/components/features/docs/DocBreadcrumb'
-import { setRequestLocale } from 'next-intl/server'
+import { unstable_noStore as noStore } from 'next/cache'
+
+export const dynamic = 'force-dynamic'
 
 export default async function DocsIndexPage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
+  noStore()
   const { locale } = await params
-  setRequestLocale(locale)
 
-  let docs = mockDocs
-  try {
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      docs = await getDocs()
-    }
-  } catch { /* use mock */ }
-
+  const docs = getDocs(locale)
   const doc = docs[0]
+
+  if (!doc) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-12 text-center">
+        <p className="text-[var(--text-secondary)]">No documentation available.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12 flex gap-8">

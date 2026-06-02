@@ -1,10 +1,8 @@
-import { mockDocs } from '@/mocks/docs'
-import { getDocs, getDocBySlug } from '@/lib/db/docs'
+import { getDocs, getDocBySlug } from '@/lib/docs'
 import { DocSidebar } from '@/components/features/docs/DocSidebar'
 import { DocContent } from '@/components/features/docs/DocContent'
 import { DocBreadcrumb } from '@/components/features/docs/DocBreadcrumb'
 import { setRequestLocale } from 'next-intl/server'
-import { NotFoundError } from '@/lib/fetch-utils'
 
 interface DocsPageProps {
   params: Promise<{ locale: string; slug: string[] }>
@@ -14,17 +12,8 @@ export default async function DocsPage({ params }: DocsPageProps) {
   const { locale, slug } = await params
   setRequestLocale(locale)
 
-  let docs = mockDocs
-  let doc = mockDocs.find((d) => d.slug.join('/') === slug.join('/')) ?? null
-
-  try {
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      docs = await getDocs()
-      doc = await getDocBySlug(slug)
-    }
-  } catch (err) {
-    if (err instanceof NotFoundError) doc = null
-  }
+  const docs = getDocs(locale)
+  const doc = getDocBySlug(locale, slug)
 
   if (!doc) {
     return (
@@ -47,14 +36,4 @@ export default async function DocsPage({ params }: DocsPageProps) {
       </main>
     </div>
   )
-}
-
-export async function generateStaticParams() {
-  try {
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      const docs = await getDocs()
-      return docs.map((doc) => ({ slug: doc.slug }))
-    }
-  } catch { /* fall through */ }
-  return mockDocs.map((doc) => ({ slug: doc.slug }))
 }

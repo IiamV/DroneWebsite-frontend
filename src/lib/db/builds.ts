@@ -25,12 +25,17 @@ function parseWires(raw: unknown): BuildWire[] {
   }))
 }
 
-function rowToBuild(row: Record<string, unknown>): DroneBuild {
+function rowToBuild(row: Record<string, unknown>, locale = 'en'): DroneBuild {
+  const useVi = locale === 'vi'
+  const nameVi = row.name_vi as string | undefined
+  const descVi = row.description_vi as string | undefined
+  const stepsVi = row.steps_vi as unknown
+
   return {
     id:                row.id as string,
     slug:              row.slug as string,
-    name:              row.name as string,
-    description:       row.description as string,
+    name:              (useVi && nameVi) ? nameVi : row.name as string,
+    description:       (useVi && descVi) ? descVi : row.description as string,
     thumbnailUrl:      row.thumbnail_url as string,
     difficulty:        row.difficulty as DroneBuild['difficulty'],
     estimatedCost:     row.estimated_cost as number,
@@ -38,14 +43,14 @@ function rowToBuild(row: Record<string, unknown>): DroneBuild {
     flightTime:        row.flight_time as string,
     useCase:           row.use_case as string,
     productIds:        (row.product_ids as string[]) ?? [],
-    steps:             parseSteps(row.steps),
+    steps:             parseSteps(useVi && Array.isArray(stepsVi) && stepsVi.length > 0 ? stepsVi : row.steps),
     wires:             parseWires(row.wires),
     modelUrl:          (row.model_url as string | null) ?? null,
     createdAt:         new Date(row.created_at as string),
   }
 }
 
-export async function getBuilds(): Promise<DroneBuild[]> {
+export async function getBuilds(locale = 'en'): Promise<DroneBuild[]> {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
@@ -54,13 +59,13 @@ export async function getBuilds(): Promise<DroneBuild[]> {
       .order('created_at', { ascending: false })
 
     if (error) throw new Error(error.message)
-    return (data ?? []).map(rowToBuild)
+    return (data ?? []).map((row) => rowToBuild(row as Record<string, unknown>, locale))
   } catch (err) {
     throw toAppError(err)
   }
 }
 
-export async function getBuildBySlug(slug: string): Promise<DroneBuild> {
+export async function getBuildBySlug(slug: string, locale = 'en'): Promise<DroneBuild> {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
@@ -70,7 +75,7 @@ export async function getBuildBySlug(slug: string): Promise<DroneBuild> {
       .single()
 
     if (error || !data) throw new NotFoundError(`Build not found: ${slug}`)
-    return rowToBuild(data as Record<string, unknown>)
+    return rowToBuild(data as Record<string, unknown>, locale)
   } catch (err) {
     throw toAppError(err)
   }

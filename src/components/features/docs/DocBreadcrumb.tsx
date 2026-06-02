@@ -1,16 +1,23 @@
+'use client'
+
 import Link from 'next/link'
+import { useLocale, useTranslations } from 'next-intl'
+import { localePath } from '@/constants/routes'
 
 interface DocBreadcrumbProps {
   slug: string[]
 }
 
 export function DocBreadcrumb({ slug }: DocBreadcrumbProps) {
+  const locale = useLocale()
+  const t = useTranslations('docs')
+
   const crumbs = slug.map((segment, i) => ({
     label: segment
       .split('-')
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(' '),
-    href: '/docs/' + slug.slice(0, i + 1).join('/'),
+    href: localePath(locale, '/docs/' + slug.slice(0, i + 1).join('/')),
     isLast: i === slug.length - 1,
   }))
 
@@ -19,10 +26,10 @@ export function DocBreadcrumb({ slug }: DocBreadcrumbProps) {
       <ol className="flex flex-wrap items-center gap-1 text-sm text-[var(--text-secondary)]">
         <li>
           <Link
-            href="/docs"
+            href={localePath(locale, '/docs')}
             className="hover:text-[var(--text-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded"
           >
-            Docs
+            {t('navigation')}
           </Link>
         </li>
         {crumbs.map((crumb) => (

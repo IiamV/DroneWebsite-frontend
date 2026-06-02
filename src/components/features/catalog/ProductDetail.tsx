@@ -8,28 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { CompatibilityPanel } from './CompatibilityPanel'
 import { Product3DViewer } from './Product3DViewer'
 import type { Product } from '@/types'
-
-const CATEGORY_COLORS: Record<Product['category'], string> = {
-  frame: '#6366f1',
-  motor: '#f59e0b',
-  esc: '#10b981',
-  flight_controller: '#3b82f6',
-  propeller: '#8b5cf6',
-  battery: '#ef4444',
-  camera: '#ec4899',
-  complete_drone: '#0ea5e9',
-}
-
-const CATEGORY_LABELS: Record<Product['category'], string> = {
-  frame: 'Frame',
-  motor: 'Motor',
-  esc: 'ESC',
-  flight_controller: 'Flight Controller',
-  propeller: 'Propeller',
-  battery: 'Battery',
-  camera: 'Camera',
-  complete_drone: 'Complete Drone',
-}
+import { CATEGORY_COLORS, CATEGORY_LABELS } from '@/constants/catalog'
 
 interface ProductDetailProps {
   product: Product

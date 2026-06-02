@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import { mockBuilds } from '@/mocks/builds'
-import { mockProducts } from '@/mocks/products'
 import { getBuildBySlug } from '@/lib/db/builds'
 import { getProducts } from '@/lib/db/products'
 import { BuildDetail } from '@/components/features/catalog/BuildDetail'
@@ -9,7 +7,6 @@ import { ROUTES, localePath } from '@/constants/routes'
 import { setRequestLocale } from 'next-intl/server'
 import { NotFoundError } from '@/lib/fetch-utils'
 
-// Force dynamic rendering so the Supabase client (which uses cookies) works at runtime
 export const dynamic = 'force-dynamic'
 
 interface Props {
@@ -20,32 +17,14 @@ export default async function CatalogDetailPage({ params }: Props) {
   const { locale, slug } = await params
   setRequestLocale(locale)
 
-  // ── Try build slug first ───────────────────────────────────────────────
-  let build = mockBuilds.find((b) => b.slug === slug) ?? null
-  let allProducts = mockProducts
-
+  let build = null
   try {
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      // Try to get the build from Supabase — keep mock if not found or on error
-      try {
-        const dbBuild = await getBuildBySlug(slug)
-        build = dbBuild  // only overwrite mock if Supabase succeeds
-      } catch (err) {
-        // NotFoundError = slug not in DB yet, keep mock build
-        // Any other error = Supabase unavailable, keep mock build
-        if (!(err instanceof NotFoundError)) {
-          console.warn('getBuildBySlug failed, using mock:', err)
-        }
-      }
-      // Try to get products from Supabase
-      try {
-        const fetched = await getProducts()
-        if (fetched.length > 0) allProducts = fetched
-      } catch {
-        // keep mockProducts
-      }
-    }
-  } catch { /* keep mocks */ }
+    build = await getBuildBySlug(slug, locale)
+  } catch (err) {
+    if (!(err instanceof NotFoundError)) throw err
+  }
+
+  const allProducts = await getProducts()
 
   if (build) {
     return (
