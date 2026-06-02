@@ -9,10 +9,9 @@ import { Footer } from '@/components/layout/Footer'
 import { ToastProvider } from '@/components/ui/Toast'
 import { PageTransition } from '@/components/layout/PageTransition'
 import { LocaleHtmlUpdater } from '@/components/layout/LocaleHtmlUpdater'
+import { getTiers } from '@/lib/db/tiers'
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
+export const dynamic = 'force-dynamic'
 
 export default async function LocaleLayout({
   children,
@@ -30,6 +29,7 @@ export default async function LocaleLayout({
   setRequestLocale(locale)
 
   const messages = (await import(`../../../messages/${locale}.json`)).default
+  const tiers = await getTiers()
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
@@ -38,7 +38,7 @@ export default async function LocaleLayout({
         <AuthProvider>
           <ToastProvider>
             <div className="flex min-h-screen flex-col bg-[var(--bg-primary)] text-[var(--text-primary)]">
-              <Navbar />
+              <Navbar tiers={tiers} />
               <PageTransition>
                 <main className="flex-1">{children}</main>
               </PageTransition>
