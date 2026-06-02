@@ -1,26 +1,73 @@
 import { createClient } from '@/lib/supabase/server'
 import { toAppError, NotFoundError } from '@/lib/fetch-utils'
-import type { Course, CourseModule } from '@/types'
+import type { Course, CourseModule, CourseQuizQuestion } from '@/types'
 
-function rowToModule(row: Record<string, unknown>): CourseModule {
+type Locale = 'en' | 'vi' | string
+
+function localized(row: Record<string, unknown>, key: string, locale: Locale): string {
+  if (locale === 'vi') {
+    const viValue = row[`${key}_vi`]
+    if (typeof viValue === 'string' && viValue.trim()) return viValue
+  }
+  return (row[key] as string) ?? ''
+}
+
+function normalizeQuiz(value: unknown, locale: Locale): CourseQuizQuestion[] {
+  if (!Array.isArray(value)) return []
+
+  return value.flatMap((item) => {
+    if (!item || typeof item !== 'object') return []
+    const row = item as Record<string, unknown>
+    const localizedQuestion = locale === 'vi' && typeof row.questionVi === 'string'
+      ? row.questionVi
+      : row.question
+    const localizedOptions = locale === 'vi' && Array.isArray(row.optionsVi)
+      ? row.optionsVi
+      : row.options
+    const localizedExplanation = locale === 'vi' && typeof row.explanationVi === 'string'
+      ? row.explanationVi
+      : row.explanation
+
+    if (
+      typeof row.id !== 'string' ||
+      typeof localizedQuestion !== 'string' ||
+      !Array.isArray(localizedOptions) ||
+      typeof row.answerIndex !== 'number'
+    ) {
+      return []
+    }
+
+    return [{
+      id: row.id,
+      question: localizedQuestion,
+      options: localizedOptions.filter((option): option is string => typeof option === 'string'),
+      answerIndex: row.answerIndex,
+      explanation: typeof localizedExplanation === 'string' ? localizedExplanation : '',
+    }]
+  })
+}
+
+function rowToModule(row: Record<string, unknown>, locale: Locale): CourseModule {
   return {
     id: row.id as string,
     courseId: row.course_id as string,
-    title: row.title as string,
+    title: localized(row, 'title', locale),
     videoUrl: (row.video_url as string | null) ?? null,
-    content: row.content as string,
+    content: localized(row, 'content', locale),
+    lessonType: (row.lesson_type as CourseModule['lessonType'] | undefined) ?? 'lesson',
+    quiz: normalizeQuiz(row.quiz, locale),
     order: row.order as number,
   }
 }
 
-function rowToCourse(row: Record<string, unknown>, modules: CourseModule[]): Course {
+function rowToCourse(row: Record<string, unknown>, modules: CourseModule[], locale: Locale): Course {
   return {
     id: row.id as string,
     slug: row.slug as string,
-    title: row.title as string,
-    description: row.description as string,
+    title: localized(row, 'title', locale),
+    description: localized(row, 'description', locale),
     thumbnailUrl: row.thumbnail_url as string,
-    category: row.category as string,
+    category: localized(row, 'category', locale),
     difficulty: row.difficulty as Course['difficulty'],
     durationMinutes: row.duration_minutes as number,
     requiredTier: row.required_tier as string,
@@ -29,7 +76,7 @@ function rowToCourse(row: Record<string, unknown>, modules: CourseModule[]): Cou
   }
 }
 
-export async function getCourses(): Promise<Course[]> {
+export async function getCourses(locale: Locale = 'en'): Promise<Course[]> {
   try {
     const supabase = await createClient()
     const { data: courseRows, error: courseErr } = await supabase
@@ -40,27 +87,13 @@ export async function getCourses(): Promise<Course[]> {
     if (courseErr) throw new Error(courseErr.message)
     if (!courseRows?.length) return []
 
-    const courseIds = courseRows.map((c: any) => c.id)
-    const { data: moduleRows, error: moduleErr } = await supabase
-      .from('course_modules')
-      .select('*')
-      .in('course_id', courseIds)
-      .order('order', { ascending: true })
-
-    if (moduleErr) throw new Error(moduleErr.message)
-
-    return courseRows.map((c: any) => {
-      const modules = (moduleRows ?? [])
-        .filter((m: any) => m.course_id === c.id)
-        .map((m) => rowToModule(m as Record<string, unknown>))
-      return rowToCourse(c as Record<string, unknown>, modules)
-    })
+    return courseRows.map((c: any) => rowToCourse(c as Record<string, unknown>, [], locale))
   } catch (err) {
     throw toAppError(err)
   }
 }
 
-export async function getCourseBySlug(slug: string): Promise<Course> {
+export async function getCourseBySlug(slug: string, locale: Locale = 'en'): Promise<Course> {
   try {
     const supabase = await createClient()
     const { data: courseRow, error: courseErr } = await supabase
@@ -77,10 +110,15 @@ export async function getCourseBySlug(slug: string): Promise<Course> {
       .eq('course_id', (courseRow as any).id)
       .order('order', { ascending: true })
 
-    if (moduleErr) throw new Error(moduleErr.message)
+    if (moduleErr) {
+      if (moduleErr.message.toLowerCase().includes('permission denied')) {
+        return rowToCourse(courseRow as Record<string, unknown>, [], locale)
+      }
+      throw new Error(moduleErr.message)
+    }
 
-    const modules = (moduleRows ?? []).map((m) => rowToModule(m as Record<string, unknown>))
-    return rowToCourse(courseRow as Record<string, unknown>, modules)
+    const modules = (moduleRows ?? []).map((m) => rowToModule(m as Record<string, unknown>, locale))
+    return rowToCourse(courseRow as Record<string, unknown>, modules, locale)
   } catch (err) {
     throw toAppError(err)
   }

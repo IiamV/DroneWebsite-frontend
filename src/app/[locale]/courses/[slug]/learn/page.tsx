@@ -1,16 +1,16 @@
 import { getCourseBySlug } from '@/lib/db/courses'
 import { getTiers } from '@/lib/db/tiers'
-import { CourseDetailClient } from '@/components/features/courses/CourseDetailClient'
-import { setRequestLocale } from 'next-intl/server'
+import { CourseMaterialClient } from '@/components/features/courses/CourseMaterialClient'
 import { NotFoundError } from '@/lib/fetch-utils'
+import { setRequestLocale } from 'next-intl/server'
 
 export const dynamic = 'force-dynamic'
 
-interface CoursePageProps {
+interface CourseLearnPageProps {
   params: Promise<{ locale: string; slug: string }>
 }
 
-export default async function CoursePage({ params }: CoursePageProps) {
+export default async function CourseLearnPage({ params }: CourseLearnPageProps) {
   const { locale, slug } = await params
   setRequestLocale(locale)
 
@@ -25,15 +25,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
   if (!course) {
     return (
-      <main className="max-w-6xl mx-auto px-4 py-12 text-center">
+      <main className="mx-auto max-w-6xl px-4 py-12 text-center">
         <p className="text-[var(--text-secondary)]">Course not found.</p>
       </main>
     )
   }
 
-  return (
-    <main className="max-w-6xl mx-auto px-4 py-12">
-      <CourseDetailClient course={course} subscription={null} tiers={tiers} />
-    </main>
-  )
+  return <CourseMaterialClient course={course} tiers={tiers} />
 }

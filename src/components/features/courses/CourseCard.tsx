@@ -4,7 +4,7 @@ import { memo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Cpu } from 'lucide-react'
+import { Cpu, LockKeyhole, Unlock } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import type { Course } from '@/types'
@@ -45,6 +45,7 @@ export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) 
   const durationLabel = durationHours > 0
     ? `${durationHours}h ${durationMins > 0 ? `${durationMins}m` : ''}`.trim()
     : `${durationMins}m`
+  const isFree = course.requiredTier === 'free'
 
   return (
     <motion.div
@@ -54,35 +55,55 @@ export const CourseCard = memo(function CourseCard({ course }: CourseCardProps) 
     >
       <Link
         href={localePath(locale, `${ROUTES.COURSES}/${course.slug}`)}
-        className="block rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden hover:border-[var(--accent)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        className="group grid overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] transition-colors hover:border-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] sm:grid-cols-[210px_minmax(0,1fr)]"
         style={{ touchAction: 'manipulation' }}
       >
-        {/* Thumbnail */}
-        <div className="relative h-40 bg-[var(--bg-primary)] flex items-center justify-center border-b border-[var(--border)] text-[var(--text-secondary)] overflow-hidden">
+        <div className="relative min-h-40 overflow-hidden border-b border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-secondary)] sm:border-b-0 sm:border-r">
           {course.thumbnailUrl
             ? <CourseThumbnail src={course.thumbnailUrl} alt={course.title} />
-            : <Cpu size={40} aria-hidden="true" />
+            : (
+              <div className="flex h-full min-h-40 items-center justify-center">
+                <Cpu size={40} aria-hidden="true" />
+              </div>
+            )
           }
         </div>
 
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <Badge variant="outline" style={{ borderColor: DIFFICULTY_COLORS[course.difficulty], color: DIFFICULTY_COLORS[course.difficulty] }}>
-              {t(course.difficulty)}
-            </Badge>
-            <span className="text-xs text-[var(--text-secondary)] capitalize">{course.category}</span>
+        <div className="grid gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_150px] sm:p-5">
+          <div className="min-w-0">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <Badge variant="outline" style={{ borderColor: DIFFICULTY_COLORS[course.difficulty], color: DIFFICULTY_COLORS[course.difficulty] }}>
+                {t(course.difficulty)}
+              </Badge>
+              <Badge variant={isFree ? 'secondary' : 'outline'}>
+                <span className="inline-flex items-center gap-1">
+                  {isFree ? <Unlock size={12} aria-hidden="true" /> : <LockKeyhole size={12} aria-hidden="true" />}
+                  {isFree ? t('free') : t('subscriber')}
+                </span>
+              </Badge>
+              <span className="text-xs text-[var(--text-secondary)] capitalize">{course.category}</span>
+            </div>
+
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+              {t('provider')}
+            </p>
+            <h3 className="mb-2 text-base font-semibold leading-snug text-[var(--text-primary)] group-hover:underline">
+              {course.title}
+            </h3>
+            <p className="line-clamp-2 text-sm text-[var(--text-secondary)]">
+              {course.description}
+            </p>
           </div>
 
-          <h3 className="font-semibold text-[var(--text-primary)] mb-1 line-clamp-2">
-            {course.title}
-          </h3>
-          <p className="text-sm text-[var(--text-secondary)] line-clamp-2 mb-3">
-            {course.description}
-          </p>
-
-          <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-            <span>{course.modules.length} {t('modules')}</span>
-            <span>{durationLabel}</span>
+          <div className="flex flex-row gap-4 text-xs text-[var(--text-secondary)] sm:flex-col sm:items-start sm:justify-center sm:border-l sm:border-[var(--border)] sm:pl-5">
+            <span>
+              <strong className="block text-sm text-[var(--text-primary)]">{durationLabel}</strong>
+              {t('duration')}
+            </span>
+            <span>
+              <strong className="block text-sm text-[var(--text-primary)]">{isFree ? t('free') : t('subscriber')}</strong>
+              {t('access')}
+            </span>
           </div>
         </div>
       </Link>

@@ -1,24 +1,20 @@
 import { CourseGrid } from '@/components/features/courses/CourseGrid'
-import { setRequestLocale } from 'next-intl/server'
+import { unstable_noStore as noStore } from 'next/cache'
 import { getTranslations } from 'next-intl/server'
 import { getCourses } from '@/lib/db/courses'
-import { mockCourses } from '@/mocks/courses'
+
+export const dynamic = 'force-dynamic'
 
 export default async function CoursesPage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
+  noStore()
   const { locale } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations('courses')
+  const t = await getTranslations({ locale, namespace: 'courses' })
 
-  let courses = mockCourses
-  try {
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      courses = await getCourses()
-    }
-  } catch { /* use mock */ }
+  const courses = await getCourses(locale)
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-12">
