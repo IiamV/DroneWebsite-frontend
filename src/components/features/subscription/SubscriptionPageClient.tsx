@@ -9,14 +9,17 @@ import { ROUTES, localePath } from '@/constants/routes'
 interface SubscriptionPageClientProps {
   tiers: SubscriptionTier[]
   locale: string
+  currentTierId: string | null
 }
 
-export function SubscriptionPageClient({ tiers, locale }: SubscriptionPageClientProps) {
+export function SubscriptionPageClient({ tiers, locale, currentTierId }: SubscriptionPageClientProps) {
   const router = useRouter()
   const t = useTranslations('pricing')
+  const currentTier = currentTierId ? tiers.find((tier) => tier.id === currentTierId) : null
+  const currentTierRank = currentTier?.tierRank ?? -1
 
   function handleSelectTier(tier: SubscriptionTier) {
-    if (tier.price === 0) return
+    if (tier.price === 0 || tier.tierRank <= currentTierRank) return
     router.push(localePath(locale, `${ROUTES.SUBSCRIPTION_CHECKOUT}/${tier.id}`))
   }
 
@@ -30,7 +33,12 @@ export function SubscriptionPageClient({ tiers, locale }: SubscriptionPageClient
           {t('subtitle')}
         </p>
       </div>
-      <TierComparisonTable tiers={tiers} onSelectTier={handleSelectTier} locale={locale} />
+      <TierComparisonTable
+        tiers={tiers}
+        currentTierId={currentTierId ?? undefined}
+        onSelectTier={handleSelectTier}
+        locale={locale}
+      />
     </main>
   )
 }

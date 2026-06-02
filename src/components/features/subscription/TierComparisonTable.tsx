@@ -13,9 +13,13 @@ interface TierComparisonTableProps {
   locale?: string
 }
 
+type ComparisonValue = boolean | string
+
 export function TierComparisonTable({ tiers, currentTierId, onSelectTier, locale }: TierComparisonTableProps) {
   const t = useTranslations('pricing')
   const isVi = locale === 'vi'
+  const sortedTiers = [...tiers].sort((a, b) => a.tierRank - b.tierRank)
+  const currentTier = currentTierId ? sortedTiers.find((tier) => tier.id === currentTierId) : null
 
   function formatPrice(tier: SubscriptionTier) {
     if (tier.price === 0) return t('free')
@@ -25,10 +29,67 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier, locale
     return `$${tier.price.toFixed(2)}`
   }
 
+  const comparisonRows = [
+    {
+      key: 'downloadAccess',
+      label: t('downloadAccess'),
+      value: (tier: SubscriptionTier) => tier.downloadAccess,
+    },
+    {
+      key: 'courseAccess',
+      label: t('courseAccess'),
+      value: (tier: SubscriptionTier) => tier.courseAccess === 'full'
+        ? t('fullAccess')
+        : tier.courseAccess === 'basic'
+          ? t('basicAccess')
+          : t('noAccess'),
+    },
+    {
+      key: 'simulatorAccess',
+      label: t('simulatorAccess'),
+      value: (tier: SubscriptionTier) => tier.simulatorAccess,
+    },
+    {
+      key: 'seats',
+      label: t('seats'),
+      value: (tier: SubscriptionTier) => {
+        if (tier.id === 'campus') return '50'
+        if (tier.id === 'team') return '5'
+        return '1'
+      },
+    },
+    {
+      key: 'support',
+      label: t('support'),
+      value: (tier: SubscriptionTier) => {
+        if (tier.id === 'campus') return t('slaSupport')
+        if (tier.id === 'team') return t('dedicatedSupport')
+        if (tier.id === 'pro') return t('prioritySupport')
+        return t('communitySupport')
+      },
+    },
+  ]
+
+  function renderComparisonValue(value: ComparisonValue) {
+    if (typeof value === 'string') return <span>{value}</span>
+    return value ? (
+      <span className="inline-flex items-center gap-1 font-medium text-green-600">
+        <Check size={16} aria-hidden="true" />
+        {t('included')}
+      </span>
+    ) : (
+      <span className="text-[var(--text-secondary)]">-</span>
+    )
+  }
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
-      {tiers.map((tier) => {
+    <div className="space-y-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
+      {sortedTiers.map((tier) => {
         const isCurrent = tier.id === currentTierId
+        const isIncludedInCurrentPlan = Boolean(currentTier && tier.tierRank < currentTier.tierRank)
+        const isFreePlan = tier.price === 0
+        const isUnavailable = isCurrent || isIncludedInCurrentPlan || isFreePlan
         const isPro = tier.id === 'pro'
 
         return (
@@ -53,8 +114,6 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier, locale
                 'flex flex-col rounded-xl border p-6 h-full',
                 isPro
                   ? 'bg-[var(--bg-primary)] border-transparent'
-                  : isCurrent
-                  ? 'border-[var(--accent)]'
                   : 'border-[var(--border)]',
               ].join(' ')}
             >
@@ -95,18 +154,68 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier, locale
 
               {onSelectTier && (
                 <Button
-                  variant={isCurrent ? 'secondary' : 'default'}
-                  disabled={isCurrent}
+                  variant={isUnavailable ? 'secondary' : 'default'}
+                  disabled={isUnavailable}
                   onClick={() => onSelectTier(tier)}
                   className="w-full"
                 >
-                  {isCurrent ? t('currentPlan') : tier.price === 0 ? t('getStarted') : t('subscribe')}
+                  {isCurrent
+                    ? t('currentPlan')
+                    : isIncludedInCurrentPlan
+                      ? t('includedInCurrentPlan')
+                      : isFreePlan
+                        ? t('getStarted')
+                        : t('subscribe')}
                 </Button>
               )}
             </div>
           </div>
         )
       })}
+      </div>
+
+      <section aria-labelledby="plan-comparison-heading">
+        <div className="mb-4">
+          <h2 id="plan-comparison-heading" className="text-2xl font-bold text-[var(--text-primary)]">
+            {t('compareTitle')}
+          </h2>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">{t('compareSubtitle')}</p>
+        </div>
+
+        <div className="overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)]">
+          <table className="min-w-[760px] w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-[var(--border)] bg-[var(--bg-primary)]">
+                <th scope="col" className="w-[260px] px-4 py-4 text-left font-semibold text-[var(--text-primary)]">
+                  {t('feature')}
+                </th>
+                {sortedTiers.map((tier) => (
+                  <th key={tier.id} scope="col" className="px-4 py-4 text-left font-semibold text-[var(--text-primary)]">
+                    <span className="block">{tier.name}</span>
+                    <span className="mt-1 block text-xs font-normal text-[var(--text-secondary)]">
+                      {formatPrice(tier)}{tier.price > 0 ? ` ${t('perMonth')}` : ''}
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonRows.map((row) => (
+                <tr key={row.key} className="border-b border-[var(--border)] last:border-b-0">
+                  <th scope="row" className="px-4 py-3 text-left font-medium text-[var(--text-primary)]">
+                    {row.label}
+                  </th>
+                  {sortedTiers.map((tier) => (
+                    <td key={tier.id} className="px-4 py-3 text-[var(--text-secondary)]">
+                      {renderComparisonValue(row.value(tier))}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   )
 }
