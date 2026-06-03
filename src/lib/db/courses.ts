@@ -87,7 +87,7 @@ export async function getCourses(locale: Locale = 'en'): Promise<Course[]> {
     if (courseErr) throw new Error(courseErr.message)
     if (!courseRows?.length) return []
 
-    return courseRows.map((c: any) => rowToCourse(c as Record<string, unknown>, [], locale))
+    return courseRows.map((row) => rowToCourse(row as Record<string, unknown>, [], locale))
   } catch (err) {
     throw toAppError(err)
   }

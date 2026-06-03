@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { CheckCircle2, ExternalLink, FileQuestion, PlayCircle, XCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { mediaUrl } from '@/lib/media-url'
 import type { CourseModule } from '@/types'
 
 interface CoursePlayerProps {
@@ -170,6 +171,7 @@ export function CoursePlayer({ module }: CoursePlayerProps) {
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const html = renderMarkdown(module.content)
   const embedUrl = useMemo(() => getEmbedUrl(module.videoUrl), [module.videoUrl])
+  const directVideoUrl = useMemo(() => getDirectVideoUrl(module.videoUrl), [module.videoUrl])
   const correctCount = module.quiz.reduce((total, question) => (
     answers[question.id] === question.answerIndex ? total + 1 : total
   ), 0)
@@ -192,7 +194,7 @@ export function CoursePlayer({ module }: CoursePlayerProps) {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
               />
-            ) : module.videoUrl.endsWith('.mp4') ? (
+            ) : directVideoUrl ? (
               <video
                 key={module.videoUrl}
                 controls
@@ -200,7 +202,7 @@ export function CoursePlayer({ module }: CoursePlayerProps) {
                 preload="metadata"
                 aria-label={`${t('videoLesson')}: ${module.title}`}
               >
-                <source src={module.videoUrl} type="video/mp4" />
+                <source src={directVideoUrl} type={getVideoMimeType(directVideoUrl)} />
               </video>
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center text-white">
@@ -298,17 +300,37 @@ function getEmbedUrl(url: string | null): string | null {
   if (!url) return null
   try {
     const parsed = new URL(url)
-    if (parsed.hostname === 'youtu.be') {
-      const id = parsed.pathname.replace('/', '')
+    const hostname = parsed.hostname.replace(/^www\./, '')
+    if (hostname === 'youtu.be') {
+      const id = parsed.pathname.split('/').filter(Boolean)[0] ?? ''
       return id ? `https://www.youtube.com/embed/${id}` : null
     }
-    if (parsed.hostname.includes('youtube.com')) {
+    if (hostname === 'youtube.com' || hostname === 'm.youtube.com') {
       const id = parsed.searchParams.get('v')
       if (id) return `https://www.youtube.com/embed/${id}`
       if (parsed.pathname.startsWith('/embed/')) return url
+      if (parsed.pathname.startsWith('/shorts/')) {
+        const shortsId = parsed.pathname.split('/').filter(Boolean)[1] ?? ''
+        return shortsId ? `https://www.youtube.com/embed/${shortsId}` : null
+      }
     }
   } catch {
     return null
   }
   return null
+}
+
+function getDirectVideoUrl(url: string | null): string | null {
+  if (!url) return null
+  const cleanUrl = url.split('?')[0].split('#')[0].toLowerCase()
+  if (!/\.(mp4|webm|ogg|ogv|mov|m4v)$/.test(cleanUrl)) return null
+  return mediaUrl(url)
+}
+
+function getVideoMimeType(url: string): string {
+  const cleanUrl = url.split('?')[0].split('#')[0].toLowerCase()
+  if (cleanUrl.endsWith('.webm')) return 'video/webm'
+  if (cleanUrl.endsWith('.ogg') || cleanUrl.endsWith('.ogv')) return 'video/ogg'
+  if (cleanUrl.endsWith('.mov')) return 'video/quicktime'
+  return 'video/mp4'
 }

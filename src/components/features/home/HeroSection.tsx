@@ -19,9 +19,37 @@ import {
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { ROUTES, localePath } from "@/constants/routes";
-import { useState, useRef } from "react";
+import { mediaUrl } from "@/lib/media-url";
+import { useState, useRef, type Ref } from "react";
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+const homepageVideoUrl = "/images/home/hero-video.mp4";
+const homepageVideoPoster = "/images/home/hero-poster.png";
+
+function getYouTubeEmbedUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.replace(/^www\./, "");
+    let videoId = "";
+
+    if (hostname === "youtu.be") {
+      videoId = parsed.pathname.split("/").filter(Boolean)[0] ?? "";
+    } else if (hostname === "youtube.com" || hostname === "m.youtube.com") {
+      if (parsed.pathname.startsWith("/shorts/")) {
+        videoId = parsed.pathname.split("/").filter(Boolean)[1] ?? "";
+      } else if (parsed.pathname.startsWith("/embed/")) {
+        videoId = parsed.pathname.split("/").filter(Boolean)[1] ?? "";
+      } else {
+        videoId = parsed.searchParams.get("v") ?? "";
+      }
+    }
+
+    if (!videoId) return null;
+    return `https://www.youtube.com/embed/${videoId}`;
+  } catch {
+    return null;
+  }
+}
 
 export function HeroSection() {
   const t = useTranslations("hero");
@@ -29,13 +57,12 @@ export function HeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
 
-  function toggleVideo() {
+  async function playVideo() {
     if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current.play();
+    try {
+      await videoRef.current.play();
       setPlaying(true);
-    } else {
-      videoRef.current.pause();
+    } catch {
       setPlaying(false);
     }
   }
@@ -139,44 +166,18 @@ export function HeroSection() {
                 <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
                 <span className="w-3 h-3 rounded-full bg-[#28c840]" />
                 <span className="flex-1 text-center text-[11px] text-white/30 font-mono truncate">
-                  Drone Application by Insai — Build Workspace
+                  Flyntic Studio IDE by Insai
                 </span>
               </div>
 
-              {/* Video area */}
-              <div
-                className="relative aspect-[16/9] bg-[#1e1e1e] cursor-pointer group"
-                onClick={toggleVideo}
-              >
-                <video
-                  ref={videoRef}
-                  src={`${base}/images/home/hero-video.mp4`}
-                  poster={`${base}/images/home/hero-poster.png`}
-                  className="w-full h-full object-cover"
-                  playsInline
-                  muted
-                  loop
-                  onPlay={() => setPlaying(true)}
-                  onPause={() => setPlaying(false)}
-                />
-                {!playing && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 group-hover:bg-black/40 transition-colors">
-                    <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Play size={24} className="text-white ml-0.5" />
-                    </div>
-                    <span className="absolute bottom-6 text-xs text-white/50 font-medium">
-                      {t("watchDemo")}
-                    </span>
-                  </div>
-                )}
-                {playing && (
-                  <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur flex items-center justify-center">
-                      <Pause size={12} className="text-white" />
-                    </div>
-                  </div>
-                )}
-              </div>
+              <HeroDemoMedia
+                videoRef={videoRef}
+                playing={playing}
+                onPlayRequest={playVideo}
+                onPlay={() => setPlaying(true)}
+                onPause={() => setPlaying(false)}
+                label={t("watchDemo")}
+              />
             </div>
           </motion.div>
         </div>
@@ -247,7 +248,7 @@ export function HeroSection() {
             eyebrow={t("buildEyebrow")}
             title={t("buildTitle")}
             description={t("buildDescription")}
-            mediaSrc={`${base}/images/home/feature-build.gif`}
+            mediaSrc={`${base}/images/home/feature-build.png`}
             mediaAlt="Drag-and-drop drone assembly"
             imageLeft={false}
           />
@@ -255,7 +256,7 @@ export function HeroSection() {
             eyebrow={t("wireEyebrow")}
             title={t("wireTitle")}
             description={t("wireDescription")}
-            mediaSrc={`${base}/images/home/feature-wire.gif`}
+            mediaSrc={`${base}/images/home/feature-wire.png`}
             mediaAlt="Visual wiring between components"
             imageLeft={true}
           />
@@ -263,7 +264,7 @@ export function HeroSection() {
             eyebrow={t("codeEyebrow")}
             title={t("codeTitle")}
             description={t("codeDescription")}
-            mediaSrc={`${base}/images/home/feature-code.gif`}
+            mediaSrc={`${base}/images/home/feature-code.png`}
             mediaAlt="Block code and real code editor"
             imageLeft={false}
           />
@@ -271,7 +272,7 @@ export function HeroSection() {
             eyebrow={t("simEyebrow")}
             title={t("simTitle")}
             description={t("simDescription")}
-            mediaSrc={`${base}/images/home/feature-simulate.gif`}
+            mediaSrc={`${base}/images/home/feature-simulate.png`}
             mediaAlt="Physics simulation running"
             imageLeft={true}
           />
@@ -356,6 +357,79 @@ export function HeroSection() {
         </div>
       </section>
     </>
+  );
+}
+
+/* ─── Hero Demo Media ──────────────────────────────────────────────────────── */
+
+function HeroDemoMedia({
+  videoRef,
+  playing,
+  onPlayRequest,
+  onPlay,
+  onPause,
+  label,
+}: {
+  videoRef: Ref<HTMLVideoElement>;
+  playing: boolean;
+  onPlayRequest: () => void;
+  onPlay: () => void;
+  onPause: () => void;
+  label: string;
+}) {
+  const youtubeEmbedUrl = getYouTubeEmbedUrl(homepageVideoUrl);
+
+  if (youtubeEmbedUrl) {
+    return (
+      <div className="relative aspect-[16/9] bg-[#1e1e1e]">
+        <iframe
+          src={youtubeEmbedUrl}
+          title={label}
+          className="h-full w-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative aspect-[16/9] bg-[#1e1e1e] group">
+      <video
+        ref={videoRef}
+        src={mediaUrl(homepageVideoUrl)}
+        poster={mediaUrl(homepageVideoPoster)}
+        className="w-full h-full object-cover"
+        playsInline
+        controls
+        muted
+        loop
+        onPlay={onPlay}
+        onPause={onPause}
+      />
+      {!playing && (
+        <button
+          type="button"
+          onClick={onPlayRequest}
+          className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 group-hover:bg-black/40 transition-colors"
+          aria-label={label}
+        >
+          <span className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Play size={24} className="text-white ml-0.5" />
+          </span>
+          <span className="absolute bottom-6 text-xs text-white/50 font-medium">
+            {label}
+          </span>
+        </button>
+      )}
+      {playing && (
+        <div className="pointer-events-none absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur flex items-center justify-center">
+            <Pause size={12} className="text-white" />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
