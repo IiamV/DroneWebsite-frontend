@@ -2,8 +2,6 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { buildPaymentUrl, normalizeVnpayClientIp } from '@/lib/vnpay'
 import { createPayosDescription, createPayosPaymentUrl } from '@/lib/payos'
-import { createMomoPaymentUrl } from '@/lib/momo'
-import { createPaypalOrder } from '@/lib/paypal'
 import { getTiers } from '@/lib/db/tiers'
 import { createPaymentOrder, type PaymentProvider } from '@/lib/db/payment-orders'
 import { getSubscriptionGuard } from '@/lib/subscription-guard'
@@ -117,46 +115,5 @@ export async function createSubscriptionCheckout({
     return { paymentUrl, orderRef }
   }
 
-  if (provider === 'momo') {
-    const orderRef = `momo_${tierId}_${Date.now()}_${crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`
-    const paymentUrl = await createMomoPaymentUrl({
-      orderId: orderRef,
-      amount: tier.priceVnd,
-      orderInfo: `Flyntic ${tier.name} subscription`,
-      returnUrl: `${baseUrl}/api/payment/return?provider=momo&tierId=${tierId}`,
-      notifyUrl: `${baseUrl}/api/payment/momo/ipn`,
-    })
-
-    await createPaymentOrder({
-      provider,
-      userId: user.id,
-      tier,
-      orderRef,
-      currency: 'VND',
-      checkoutUrl: paymentUrl,
-      metadata: { locale: checkoutLocale },
-    })
-
-    return { paymentUrl, orderRef }
-  }
-
-  const { id: orderRef, approvalUrl } = await createPaypalOrder({
-    amount: tier.price.toFixed(2),
-    currency: 'USD',
-    description: `Flyntic ${tier.name} subscription`,
-    returnUrl: `${baseUrl}/api/payment/paypal/capture?tierId=${tierId}`,
-    cancelUrl: `${baseUrl}/${checkoutLocale}/subscription/checkout/${tierId}?payment=cancelled`,
-  })
-
-  await createPaymentOrder({
-    provider,
-    userId: user.id,
-    tier,
-    orderRef,
-    currency: 'USD',
-    checkoutUrl: approvalUrl,
-    metadata: { locale: checkoutLocale },
-  })
-
-  return { paymentUrl: approvalUrl, orderRef }
+  throw new Error('Invalid payment provider')
 }

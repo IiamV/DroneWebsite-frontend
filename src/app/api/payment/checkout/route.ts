@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSubscriptionCheckout, type CheckoutProvider } from '@/lib/payments/checkout'
 
-const providers: CheckoutProvider[] = ['vnpay', 'payos', 'momo', 'paypal']
+const providers: CheckoutProvider[] = ['vnpay', 'payos']
 
 function statusForError(message: string): number {
   if (message === 'Not authenticated') return 401

@@ -2,7 +2,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import type { Json, Tables, TablesInsert, TablesUpdate } from '@/types/database.types'
 import type { Subscription, SubscriptionTier } from '@/types'
 
-export type PaymentProvider = 'vnpay' | 'payos' | 'momo' | 'paypal'
+export type PaymentProvider = 'vnpay' | 'payos'
 export type PaymentOrderStatus = 'pending' | 'paid' | 'cancelled' | 'failed' | 'expired'
 type PaymentOrderRow = Tables<'payment_orders'>
 type PaymentOrderInsert = TablesInsert<'payment_orders'>

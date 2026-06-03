@@ -9,13 +9,11 @@ import { useAuth } from "@/components/layout/AuthProvider";
 import { localePath, ROUTES } from "@/constants/routes";
 import type { SubscriptionTier } from "@/types";
 
-type PaymentMethod = "vnpay" | "payos" | "momo" | "paypal";
+type PaymentMethod = "vnpay" | "payos";
 
 const PAYMENT_METHODS: { id: PaymentMethod; logo: string; label: string }[] = [
   { id: "vnpay", logo: "/images/payments/vnpay.svg", label: "VNPay" },
   { id: "payos", logo: "/images/payments/payos.svg", label: "PayOS" },
-  { id: "momo", logo: "/images/payments/momo.svg", label: "MoMo" },
-  //{ id: 'paypal', logo: '/images/payments/paypal.svg', label: 'PayPal' },
 ];
 
 interface CheckoutFormProps {

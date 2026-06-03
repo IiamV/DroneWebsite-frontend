@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, CircleHelp, Code2, Download, ShieldCheck, Wrench } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
+import { FeedbackForm } from '@/components/features/faq/FeedbackForm'
 
 interface FaqItem {
   question: string
@@ -125,7 +126,7 @@ export default function FaqPage() {
         </div>
       </section>
 
-      <section className="max-w-[900px] mx-auto px-6 py-14 md:py-20">
+      <section className="max-w-[1100px] mx-auto px-6 py-14 md:py-20">
         <div className="grid gap-10 lg:grid-cols-[220px_1fr]">
           <aside>
             <div className="sticky top-24 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-4">
@@ -137,10 +138,13 @@ export default function FaqPage() {
               </p>
             </div>
           </aside>
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-5 md:px-7">
-            {faqs.map((faq, index) => (
-              <FaqAccordion key={faq.question} item={faq} defaultOpen={index === 0} />
-            ))}
+          <div className="min-w-0">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] px-5 md:px-7">
+              {faqs.map((faq, index) => (
+                <FaqAccordion key={faq.question} item={faq} defaultOpen={index === 0} />
+              ))}
+            </div>
+            <FeedbackForm />
           </div>
         </div>
       </section>

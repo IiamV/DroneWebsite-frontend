@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyParams } from '@/lib/vnpay'
-import { verifyMomoIpn } from '@/lib/momo'
 import { activateSubscriptionForPaidOrder, markPaymentOrderCancelled } from '@/lib/db/payment-orders'
 
 /**
@@ -18,9 +17,7 @@ export async function GET(request: NextRequest) {
   const provider = searchParams.get('provider')
   const orderRef = provider === 'payos'
     ? searchParams.get('orderCode') ?? ''
-    : provider === 'momo'
-      ? query.orderId ?? ''
-      : query.vnp_TxnRef ?? ''
+    : query.vnp_TxnRef ?? ''
 
   // Extract tierId — longest match first to avoid prefix collision
   const tierIds = ['campus', 'team', 'pro', 'free']
@@ -52,40 +49,6 @@ export async function GET(request: NextRequest) {
       }
     }
     return NextResponse.redirect(`${baseUrl}/${locale}/subscription/checkout/${query.tierId ?? tierId}?payment=cancelled`)
-  }
-
-  if (provider === 'momo') {
-    const momoTierId = query.tierId ?? tierId
-    const result = verifyMomoIpn(query)
-
-    if (!result.isValid) {
-      console.error('[MoMo ReturnUrl] Signature invalid')
-      return NextResponse.redirect(`${baseUrl}/${locale}/subscription/checkout/${momoTierId}?payment=failed`)
-    }
-
-    if (result.resultCode !== 0) {
-      if (orderRef) {
-        try {
-          await markPaymentOrderCancelled('momo', orderRef)
-        } catch (err) {
-          console.error('[MoMo ReturnUrl] Cancel marker error:', err)
-        }
-      }
-      return NextResponse.redirect(`${baseUrl}/${locale}/subscription/checkout/${momoTierId}?payment=cancelled`)
-    }
-
-    try {
-      await activateSubscriptionForPaidOrder({
-        provider: 'momo',
-        orderRef,
-        providerTransactionId: query.transId ?? orderRef,
-        amountVnd: Number(query.amount),
-      })
-      return NextResponse.redirect(`${baseUrl}/${locale}/profile?payment=success`)
-    } catch (err) {
-      console.error('[MoMo ReturnUrl] Subscription activation error:', err)
-      return NextResponse.redirect(`${baseUrl}/${locale}/subscription/checkout/${momoTierId}?payment=failed`)
-    }
   }
 
   // Verify HMAC signature
