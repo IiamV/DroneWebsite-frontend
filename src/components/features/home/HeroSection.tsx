@@ -1,90 +1,40 @@
-"use client";
-
-import { motion } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
-  Download,
-  Play,
-  Pause,
+  Activity,
   ArrowRight,
+  BarChart3,
   Blocks,
   Cable,
   Code2,
-  Activity,
-  BarChart3,
-  Share2,
   Cpu,
+  Download,
+  Share2,
   Zap,
 } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
 import { ROUTES, localePath } from "@/constants/routes";
-import { mediaUrl } from "@/lib/media-url";
-import { useState, useRef, type Ref } from "react";
+import { HeroDemoMediaClient } from "./HeroDemoMediaClient";
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-const homepageVideoUrl = "/images/home/hero-video.mp4";
-const homepageVideoPoster = "/images/home/hero-poster.png";
 
-function getYouTubeEmbedUrl(url: string) {
-  try {
-    const parsed = new URL(url);
-    const hostname = parsed.hostname.replace(/^www\./, "");
-    let videoId = "";
-
-    if (hostname === "youtu.be") {
-      videoId = parsed.pathname.split("/").filter(Boolean)[0] ?? "";
-    } else if (hostname === "youtube.com" || hostname === "m.youtube.com") {
-      if (parsed.pathname.startsWith("/shorts/")) {
-        videoId = parsed.pathname.split("/").filter(Boolean)[1] ?? "";
-      } else if (parsed.pathname.startsWith("/embed/")) {
-        videoId = parsed.pathname.split("/").filter(Boolean)[1] ?? "";
-      } else {
-        videoId = parsed.searchParams.get("v") ?? "";
-      }
-    }
-
-    if (!videoId) return null;
-    return `https://www.youtube.com/embed/${videoId}`;
-  } catch {
-    return null;
-  }
-}
-
-export function HeroSection() {
-  const t = useTranslations("hero");
-  const locale = useLocale();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
-
-  async function playVideo() {
-    if (!videoRef.current) return;
-    try {
-      await videoRef.current.play();
-      setPlaying(true);
-    } catch {
-      setPlaying(false);
-    }
-  }
+export async function HeroSection() {
+  const t = await getTranslations("hero");
+  const locale = await getLocale();
 
   return (
     <>
-      {/* ═══════════════════════════════════════════════════════════════════
-          HERO — Centered headline + dual CTA + video demo
-      ═══════════════════════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden border-b border-[var(--border)]">
-        {/* Background grid pattern */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.015]"
+          className="pointer-events-none absolute inset-0 opacity-[0.015]"
           aria-hidden="true"
           style={{
             backgroundImage:
               "url(\"data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none' stroke='%23888' stroke-width='.5'/%3E%3C/svg%3E\")",
           }}
         />
-        {/* Gradient glow */}
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] pointer-events-none opacity-20"
+          className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[1000px] -translate-x-1/2 opacity-20"
           aria-hidden="true"
           style={{
             background:
@@ -92,117 +42,69 @@ export function HeroSection() {
           }}
         />
 
-        <div className="relative max-w-[1100px] mx-auto px-6 pt-24 pb-16 md:pt-36 md:pb-24">
-          {/* Badge */}
-          <motion.div
-            className="flex justify-center mb-8"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/5 text-xs font-medium text-[var(--accent)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+        <div className="relative mx-auto max-w-[1100px] px-6 pb-16 pt-24 md:pb-24 md:pt-36">
+          <div className="mb-8 flex justify-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/5 px-3.5 py-1.5 text-xs font-medium text-[var(--accent)]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
               {t("badge")}
             </span>
-          </motion.div>
+          </div>
 
-          {/* Headline */}
-          <motion.h1
-            className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-extrabold leading-[1.08] tracking-tight text-[var(--text-primary)] mb-5 max-w-3xl mx-auto"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.05 }}
-          >
+          <h1 className="mx-auto mb-5 max-w-3xl text-center text-4xl font-extrabold leading-[1.08] tracking-tight text-[var(--text-primary)] sm:text-5xl md:text-6xl lg:text-[4.25rem]">
             {t("headline")}
-          </motion.h1>
+          </h1>
 
-          {/* Subheadline */}
-          <motion.p
-            className="text-center text-base md:text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mb-10 leading-relaxed"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.12 }}
-          >
+          <p className="mx-auto mb-10 max-w-2xl text-center text-base leading-relaxed text-[var(--text-secondary)] md:text-lg">
             {t("subheadline")}
-          </motion.p>
+          </p>
 
-          {/* CTAs */}
-          <motion.div
-            className="flex flex-wrap items-center justify-center gap-3 mb-16"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-          >
+          <div className="mb-16 flex flex-wrap items-center justify-center gap-3">
             <Link
               href={localePath(locale, ROUTES.DOWNLOADS)}
-              className="group inline-flex items-center gap-2 min-h-[44px] px-6 py-2.5 rounded-lg bg-[var(--accent)] text-[var(--bg-primary)] font-semibold text-sm shadow-md shadow-[var(--accent)]/25 hover:shadow-lg hover:shadow-[var(--accent)]/30 hover:brightness-110 transition-all"
+              className="group inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-2.5 text-sm font-semibold text-[var(--bg-primary)] shadow-md shadow-[var(--accent)]/25 transition-all hover:brightness-110"
             >
               <Download size={14} />
               {t("downloadTrial")}
               <ArrowRight
                 size={14}
-                className="group-hover:translate-x-0.5 transition-transform"
+                className="transition-transform group-hover:translate-x-0.5"
               />
             </Link>
             <Link
               href={localePath(locale, ROUTES.SUBSCRIPTION)}
-              className="inline-flex items-center gap-2 min-h-[44px] px-6 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] font-semibold text-sm text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] px-6 py-2.5 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-secondary)]"
             >
               {t("viewPlans")}
             </Link>
-          </motion.div>
+          </div>
 
-          {/* Video / IDE Demo */}
-          <motion.div
-            className="relative mx-auto max-w-[960px]"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <div className="relative rounded-xl overflow-hidden border border-[var(--border)] shadow-2xl shadow-black/10 dark:shadow-black/40 bg-[#1e1e1e]">
-              {/* Title bar */}
-              <div className="flex items-center gap-2 px-4 py-2 border-b border-white/[0.06] bg-[#252526]">
-                <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-                <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
-                <span className="w-3 h-3 rounded-full bg-[#28c840]" />
-                <span className="flex-1 text-center text-[11px] text-white/30 font-mono truncate">
+          <div className="relative mx-auto max-w-[960px]">
+            <div className="relative overflow-hidden rounded-xl border border-[var(--border)] bg-[#1e1e1e] shadow-2xl shadow-black/10 dark:shadow-black/40">
+              <div className="flex items-center gap-2 border-b border-white/[0.06] bg-[#252526] px-4 py-2">
+                <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+                <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
+                <span className="h-3 w-3 rounded-full bg-[#28c840]" />
+                <span className="flex-1 truncate text-center font-mono text-[11px] text-white/30">
                   Flyntic Studio IDE by Insai
                 </span>
               </div>
-
-              <HeroDemoMedia
-                videoRef={videoRef}
-                playing={playing}
-                onPlayRequest={playVideo}
-                onPlay={() => setPlaying(true)}
-                onPause={() => setPlaying(false)}
-                label={t("watchDemo")}
-              />
+              <HeroDemoMediaClient label={t("watchDemo")} />
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          CAPABILITIES — Bento grid
-      ═══════════════════════════════════════════════════════════════════ */}
-      <section className="max-w-[1100px] mx-auto px-6 py-20 md:py-28">
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-2">
+      <section className="mx-auto max-w-[1100px] px-6 py-20 md:py-28">
+        <div className="mb-12 text-center">
+          <h2 className="mb-2 text-2xl font-bold text-[var(--text-primary)] md:text-3xl">
             {t("featuresHeading")}
           </h2>
-          <p className="text-sm text-[var(--text-secondary)] max-w-md mx-auto">
+          <p className="mx-auto max-w-md text-sm text-[var(--text-secondary)]">
             {t("featuresSubheading")}
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--border)] rounded-xl overflow-hidden border border-[var(--border)]">
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--border)] md:grid-cols-2 lg:grid-cols-3">
           {[
             { icon: Blocks, key: "build", color: "#6366f1" },
             { icon: Cable, key: "wire", color: "#0ea5e9" },
@@ -210,40 +112,33 @@ export function HeroSection() {
             { icon: Activity, key: "sim", color: "#f59e0b" },
             { icon: BarChart3, key: "stats", color: "#ec4899" },
             { icon: Share2, key: "export", color: "#8b5cf6" },
-          ].map((f, i) => {
+          ].map((f) => {
             const Icon = f.icon;
             return (
-              <motion.div
+              <div
                 key={f.key}
-                className="bg-[var(--bg-primary)] p-6 hover:bg-[var(--bg-secondary)] transition-colors"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
+                className="bg-[var(--bg-primary)] p-6 transition-colors hover:bg-[var(--bg-secondary)]"
               >
                 <div
-                  className="w-8 h-8 rounded-md flex items-center justify-center mb-3"
+                  className="mb-3 flex h-8 w-8 items-center justify-center rounded-md"
                   style={{ backgroundColor: f.color + "12", color: f.color }}
                 >
                   <Icon size={16} />
                 </div>
-                <h3 className="font-semibold text-sm text-[var(--text-primary)] mb-1">
+                <h3 className="mb-1 text-sm font-semibold text-[var(--text-primary)]">
                   {t(`${f.key}Title`)}
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
                   {t(`${f.key}Description`)}
                 </p>
-              </motion.div>
+              </div>
             );
           })}
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          FEATURE DEEP-DIVES — Alternating rows with media
-      ═══════════════════════════════════════════════════════════════════ */}
       <section className="border-t border-[var(--border)]">
-        <div className="max-w-[1100px] mx-auto px-6 py-20 md:py-28 space-y-20 md:space-y-28">
+        <div className="mx-auto max-w-[1100px] space-y-20 px-6 py-20 md:space-y-28 md:py-28">
           <FeatureRow
             eyebrow={t("buildEyebrow")}
             title={t("buildTitle")}
@@ -258,7 +153,7 @@ export function HeroSection() {
             description={t("wireDescription")}
             mediaSrc={`${base}/images/home/feature-wire.png`}
             mediaAlt="Visual wiring between components"
-            imageLeft={true}
+            imageLeft
           />
           <FeatureRow
             eyebrow={t("codeEyebrow")}
@@ -274,212 +169,81 @@ export function HeroSection() {
             description={t("simDescription")}
             mediaSrc={`${base}/images/home/feature-simulate.png`}
             mediaAlt="Physics simulation running"
-            imageLeft={true}
+            imageLeft
           />
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          FULL IDE SHOWCASE
-      ═══════════════════════════════════════════════════════════════════ */}
       <section className="border-t border-[var(--border)] bg-[var(--bg-secondary)]">
-        <div className="max-w-[1100px] mx-auto px-6 py-20 md:py-28">
-          <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-          >
-            <h2 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-2">
+        <div className="mx-auto max-w-[1100px] px-6 py-20 md:py-28">
+          <div className="mb-10 text-center">
+            <h2 className="mb-2 text-2xl font-bold text-[var(--text-primary)] md:text-3xl">
               {t("ideHeading")}
             </h2>
-            <p className="text-sm text-[var(--text-secondary)] max-w-lg mx-auto">
+            <p className="mx-auto max-w-lg text-sm text-[var(--text-secondary)]">
               {t("ideSubheading")}
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="relative rounded-xl overflow-hidden border border-[var(--border)] shadow-xl"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.5 }}
-          >
-            <IdeFallback />
-          </motion.div>
+          <div className="relative overflow-hidden rounded-xl border border-[var(--border)] shadow-xl">
+            <IdeImage />
+          </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          DOWNLOAD CTA
-      ═══════════════════════════════════════════════════════════════════ */}
       <section className="border-t border-[var(--border)]">
-        <div className="max-w-[800px] mx-auto px-6 py-20 md:py-28 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-          >
-            <div className="w-12 h-12 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center mx-auto mb-6">
-              <Zap size={20} className="text-[var(--accent)]" />
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-3">
-              {t("ctaHeading")}
-            </h2>
-            <p className="text-sm text-[var(--text-secondary)] max-w-md mx-auto mb-8">
-              {t("ctaSubheading")}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href={localePath(locale, ROUTES.DOWNLOADS)}
-                className="group inline-flex items-center gap-2 min-h-[44px] px-6 py-2.5 rounded-lg bg-[var(--accent)] text-[var(--bg-primary)] font-semibold text-sm hover:brightness-110 transition-all"
-              >
-                <Download size={14} />
-                {t("downloadTrial")}
-                <ArrowRight
-                  size={14}
-                  className="group-hover:translate-x-0.5 transition-transform"
-                />
-              </Link>
-              <Link
-                href={localePath(locale, ROUTES.SUBSCRIPTION)}
-                className="inline-flex items-center gap-2 min-h-[44px] px-6 py-2.5 round--text-primaryed-lg border border-[var(--border)] font-semibold text-sm text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors"
-              >
-                {t("viewPlans")}
-              </Link>
-            </div>
-            <p className="text-xs text-[var(--text-secondary)] mt-4">
-              {t("fullVersionNote")}
-            </p>
-          </motion.div>
+        <div className="mx-auto max-w-[800px] px-6 py-20 text-center md:py-28">
+          <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent)]/10">
+            <Zap size={20} className="text-[var(--accent)]" />
+          </div>
+          <h2 className="mb-3 text-2xl font-bold text-[var(--text-primary)] md:text-3xl">
+            {t("ctaHeading")}
+          </h2>
+          <p className="mx-auto mb-8 max-w-md text-sm text-[var(--text-secondary)]">
+            {t("ctaSubheading")}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href={localePath(locale, ROUTES.DOWNLOADS)}
+              className="group inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-2.5 text-sm font-semibold text-[var(--bg-primary)] transition-all hover:brightness-110"
+            >
+              <Download size={14} />
+              {t("downloadTrial")}
+              <ArrowRight
+                size={14}
+                className="transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
+            <Link
+              href={localePath(locale, ROUTES.SUBSCRIPTION)}
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-[var(--border)] px-6 py-2.5 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-secondary)]"
+            >
+              {t("viewPlans")}
+            </Link>
+          </div>
+          <p className="mt-4 text-xs text-[var(--text-secondary)]">
+            {t("fullVersionNote")}
+          </p>
         </div>
       </section>
     </>
   );
 }
 
-/* ─── Hero Demo Media ──────────────────────────────────────────────────────── */
-
-function HeroDemoMedia({
-  videoRef,
-  playing,
-  onPlayRequest,
-  onPlay,
-  onPause,
-  label,
-}: {
-  videoRef: Ref<HTMLVideoElement>;
-  playing: boolean;
-  onPlayRequest: () => void;
-  onPlay: () => void;
-  onPause: () => void;
-  label: string;
-}) {
-  const youtubeEmbedUrl = getYouTubeEmbedUrl(homepageVideoUrl);
-
-  if (youtubeEmbedUrl) {
-    return (
-      <div className="relative aspect-[16/9] bg-[#1e1e1e]">
-        <iframe
-          src={youtubeEmbedUrl}
-          title={label}
-          className="h-full w-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative aspect-[16/9] bg-[#1e1e1e] group">
-      <video
-        ref={videoRef}
-        src={mediaUrl(homepageVideoUrl)}
-        poster={mediaUrl(homepageVideoPoster)}
-        className="w-full h-full object-cover"
-        playsInline
-        controls
-        muted
-        loop
-        onPlay={onPlay}
-        onPause={onPause}
-      />
-      {!playing && (
-        <button
-          type="button"
-          onClick={onPlayRequest}
-          className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 group-hover:bg-black/40 transition-colors"
-          aria-label={label}
-        >
-          <span className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Play size={24} className="text-white ml-0.5" />
-          </span>
-          <span className="absolute bottom-6 text-xs text-white/50 font-medium">
-            {label}
-          </span>
-        </button>
-      )}
-      {playing && (
-        <div className="pointer-events-none absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur flex items-center justify-center">
-            <Pause size={12} className="text-white" />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ─── IDE Screenshot with fallback ─────────────────────────────────────────── */
-
-function IdeFallback() {
-  const [loaded, setLoaded] = useState(false);
-  const [errored, setErrored] = useState(false);
-
+function IdeImage() {
   return (
     <div className="relative aspect-[16/9] bg-[#1e1e1e]">
-      {!errored && (
-        <Image
-          src={`${base}/images/home/ide-full.png`}
-          alt="Drone Application by Insai — full IDE workspace"
-          fill
-          sizes="(min-width: 1100px) 1100px, 100vw"
-          className={`object-cover transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
-          onLoad={() => setLoaded(true)}
-          onError={() => setErrored(true)}
-        />
-      )}
-      {!loaded && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#1e1e1e]">
-          <div className="flex items-center gap-3 px-4 py-2 rounded-lg border border-white/10 bg-white/5">
-            <div className="w-3 h-3 rounded-sm bg-[#6366f1]" />
-            <div className="w-3 h-3 rounded-sm bg-[#0ea5e9]" />
-            <div className="w-3 h-3 rounded-sm bg-[#10b981]" />
-            <div className="w-3 h-3 rounded-sm bg-[#f59e0b]" />
-          </div>
-          <div className="text-center">
-            <p className="text-sm font-medium text-white/50">
-              Drone Application by Insai
-            </p>
-            <p className="text-xs text-white/30 mt-1">
-              Build · Wire · Code · Simulate
-            </p>
-          </div>
-          <div className="flex gap-2 mt-2">
-            <div className="w-32 h-20 rounded border border-white/10 bg-white/[0.03]" />
-            <div className="w-48 h-20 rounded border border-white/10 bg-white/[0.03]" />
-            <div className="w-32 h-20 rounded border border-white/10 bg-white/[0.03]" />
-          </div>
-        </div>
-      )}
+      <Image
+        src={`${base}/images/home/ide-full.png`}
+        alt="Drone Application by Insai - full IDE workspace"
+        fill
+        loading="lazy"
+        sizes="(min-width: 1100px) 1100px, 100vw"
+        className="object-cover"
+      />
     </div>
   );
 }
-
-/* ─── Feature Row ──────────────────────────────────────────────────────────── */
 
 function FeatureRow({
   eyebrow,
@@ -497,58 +261,38 @@ function FeatureRow({
   imageLeft: boolean;
 }) {
   return (
-    <motion.div
+    <div
       className={`flex flex-col ${imageLeft ? "lg:flex-row-reverse" : "lg:flex-row"} items-center gap-10 lg:gap-16`}
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.5 }}
     >
-      {/* Text */}
       <div className="flex-1 space-y-3">
         <span className="text-[11px] font-semibold uppercase tracking-widest text-[var(--accent)]">
           {eyebrow}
         </span>
-        <h3 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] leading-snug">
+        <h3 className="text-xl font-bold leading-snug text-[var(--text-primary)] md:text-2xl">
           {title}
         </h3>
-        <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-md">
+        <p className="max-w-md text-sm leading-relaxed text-[var(--text-secondary)]">
           {description}
         </p>
       </div>
 
-      {/* Media */}
-      <div className="flex-1 w-full">
-        <FeatureMedia src={mediaSrc} alt={mediaAlt} />
-      </div>
-    </motion.div>
-  );
-}
-
-function FeatureMedia({ src, alt }: { src: string; alt: string }) {
-  const [errored, setErrored] = useState(false);
-
-  return (
-    <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] shadow-md">
-      {!errored && (
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          unoptimized
-          sizes="(min-width: 1024px) 500px, 100vw"
-          className="object-cover"
-          onError={() => setErrored(true)}
-        />
-      )}
-      {errored && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[var(--text-secondary)]">
-          <Cpu size={24} className="opacity-20" />
-          <p className="text-[10px] font-medium opacity-40">
-            {src.split("/").pop()}
-          </p>
+      <div className="w-full flex-1">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] shadow-md">
+          <Image
+            src={mediaSrc}
+            alt={mediaAlt}
+            fill
+            loading="lazy"
+            sizes="(min-width: 1024px) 500px, 100vw"
+            className="object-cover"
+          />
+          <noscript>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[var(--text-secondary)]">
+              <Cpu size={24} className="opacity-20" />
+            </div>
+          </noscript>
         </div>
-      )}
+      </div>
     </div>
   );
 }

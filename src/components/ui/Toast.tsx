@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useCallback, useContext, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 
 type ToastType = 'info' | 'success' | 'error'
 
@@ -43,21 +42,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         aria-live="polite"
         className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2"
       >
-        <AnimatePresence>
-          {toasts.map((t) => (
-            <motion.div
-              key={t.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.15 }}
-              className={`rounded-md px-4 py-3 text-sm font-medium shadow-lg ${typeClasses[t.type]}`}
-              role="alert"
-            >
-              {t.message}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className={`rounded-md px-4 py-3 text-sm font-medium shadow-lg ${typeClasses[t.type]}`}
+            role="alert"
+          >
+            {t.message}
+          </div>
+        ))}
       </div>
     </ToastContext.Provider>
   )

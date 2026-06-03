@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import type { User as AppUser } from '@/types'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
@@ -32,31 +31,53 @@ function supabaseUserToAppUser(u: SupabaseUser): AppUser {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSupabaseUser(session?.user ?? null)
-      setLoading(false)
+    let cancelled = false
+    let unsubscribe: (() => void) | undefined
+
+    async function initAuth() {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!cancelled) {
+        setSupabaseUser(session?.user ?? null)
+        setLoading(false)
+      }
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (!cancelled) setSupabaseUser(session?.user ?? null)
+      })
+      if (cancelled) {
+        subscription.unsubscribe()
+      } else {
+        unsubscribe = () => subscription.unsubscribe()
+      }
+    }
+
+    initAuth().catch(() => {
+      if (!cancelled) setLoading(false)
     })
 
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSupabaseUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
+    return () => {
+      cancelled = true
+      unsubscribe?.()
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = useCallback(async (email: string, password: string) => {
+    const { createClient } = await import('@/lib/supabase/client')
+    const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     return { error: error?.message ?? null }
-  }, [supabase])
+  }, [])
 
   const logout = useCallback(async () => {
+    const { createClient } = await import('@/lib/supabase/client')
+    const supabase = createClient()
     await supabase.auth.signOut()
-  }, [supabase])
+  }, [])
 
   const user = supabaseUser ? supabaseUserToAppUser(supabaseUser) : null
   const emailConfirmed = !!(supabaseUser?.email_confirmed_at)

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import type { Subscription, SubscriptionTier } from '@/types'
 
 interface UseSubscriptionResult {
@@ -32,10 +31,12 @@ export function useSubscription(allTiers: SubscriptionTier[]): UseSubscriptionRe
   const [tick, setTick] = useState(0)
 
   useEffect(() => {
-    const supabase = createClient()
     let cancelled = false
+    let unsubscribe: (() => void) | undefined
 
     async function fetch() {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
       setLoading(true)
       const { data: { user } } = await supabase.auth.getUser()
       if (!user || cancelled) { setLoading(false); return }
@@ -56,15 +57,25 @@ export function useSubscription(allTiers: SubscriptionTier[]): UseSubscriptionRe
     }
 
     fetch()
+    subscribe()
 
     // Re-fetch when auth state changes
-    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange(() => {
-      if (!cancelled) fetch()
-    })
+    async function subscribe() {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange(() => {
+        if (!cancelled) fetch()
+      })
+      if (cancelled) {
+        authSub.unsubscribe()
+      } else {
+        unsubscribe = () => authSub.unsubscribe()
+      }
+    }
 
     return () => {
       cancelled = true
-      authSub.unsubscribe()
+      unsubscribe?.()
     }
   }, [tick]) // eslint-disable-line react-hooks/exhaustive-deps
 

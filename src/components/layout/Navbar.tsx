@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Sun, Moon, Menu, X, Globe } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useTheme } from '@/components/layout/ThemeProvider'
@@ -67,6 +66,7 @@ export function Navbar({ tiers }: NavbarProps) {
     // Replace the locale prefix in the current path
     const segments = pathname.split('/')
     segments[1] = next
+    window.dispatchEvent(new Event('app:navigation-start'))
     router.push(segments.join('/') || '/')
   }
 
@@ -230,32 +230,21 @@ export function Navbar({ tiers }: NavbarProps) {
         </nav>
       </header>
 
-      <AnimatePresence>
-        {drawerOpen && (
-          <>
-            <motion.div
-              key="backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/50 md:hidden"
-              onClick={() => setDrawerOpen(false)}
-              aria-hidden="true"
-            />
-            <motion.div
-              key="drawer"
-              id="mobile-drawer"
-              ref={drawerRef}
-              role="dialog"
-              aria-modal="true"
-              aria-label={t('menu')}
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.25 }}
-              className="fixed inset-y-0 right-0 z-50 flex w-72 flex-col bg-[var(--bg-primary)] shadow-xl md:hidden"
-            >
+      {drawerOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={() => setDrawerOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            id="mobile-drawer"
+            ref={drawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('menu')}
+            className="fixed inset-y-0 right-0 z-50 flex w-72 flex-col bg-[var(--bg-primary)] shadow-xl md:hidden"
+          >
               <div className="flex h-16 items-center justify-between border-b border-[var(--border)] px-4">
                 <span className="font-bold text-[var(--text-primary)]">{t('menu')}</span>
                 <button
@@ -290,10 +279,9 @@ export function Navbar({ tiers }: NavbarProps) {
               <div className="border-t border-[var(--border)] px-4 py-4">
                 {AuthMobile}
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          </div>
+        </>
+      )}
     </>
   )
 }

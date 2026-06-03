@@ -3,12 +3,16 @@ import { DocSidebar } from '@/components/features/docs/DocSidebar'
 import { DocContent } from '@/components/features/docs/DocContent'
 import { DocBreadcrumb } from '@/components/features/docs/DocBreadcrumb'
 import { setRequestLocale } from 'next-intl/server'
+import { unstable_noStore as noStore } from 'next/cache'
+
+export const dynamic = 'force-dynamic'
 
 interface DocsPageProps {
   params: Promise<{ locale: string; slug: string[] }>
 }
 
 export default async function DocsPage({ params }: DocsPageProps) {
+  noStore()
   const { locale, slug } = await params
   setRequestLocale(locale)
 

@@ -29,7 +29,24 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier, locale
     return `$${tier.price.toFixed(2)}`
   }
 
+  function getDisplayFeatures(tier: SubscriptionTier) {
+    const features = isVi ? tier.featuresVi : tier.features
+    if (features.length > 0) return features
+    if (tier.price === 0 || tier.tierRank === 0) return [t('freeTierFeature')]
+    return []
+  }
+
   const comparisonRows = [
+    {
+      key: 'catalogAccess',
+      label: t('catalogAccess'),
+      value: () => true,
+    },
+    {
+      key: 'docsAccess',
+      label: t('docsAccess'),
+      value: () => true,
+    },
     {
       key: 'downloadAccess',
       label: t('downloadAccess'),
@@ -38,16 +55,7 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier, locale
     {
       key: 'courseAccess',
       label: t('courseAccess'),
-      value: (tier: SubscriptionTier) => tier.courseAccess === 'full'
-        ? t('fullAccess')
-        : tier.courseAccess === 'basic'
-          ? t('basicAccess')
-          : t('noAccess'),
-    },
-    {
-      key: 'simulatorAccess',
-      label: t('simulatorAccess'),
-      value: (tier: SubscriptionTier) => tier.simulatorAccess,
+      value: (tier: SubscriptionTier) => tier.courseAccess !== 'none',
     },
     {
       key: 'seats',
@@ -56,16 +64,6 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier, locale
         if (tier.id === 'campus') return '50'
         if (tier.id === 'team') return '5'
         return '1'
-      },
-    },
-    {
-      key: 'support',
-      label: t('support'),
-      value: (tier: SubscriptionTier) => {
-        if (tier.id === 'campus') return t('slaSupport')
-        if (tier.id === 'team') return t('dedicatedSupport')
-        if (tier.id === 'pro') return t('prioritySupport')
-        return t('communitySupport')
       },
     },
   ]
@@ -144,7 +142,7 @@ export function TierComparisonTable({ tiers, currentTierId, onSelectTier, locale
               </div>
 
               <ul className="flex-1 space-y-2 mb-6">
-                {(isVi ? tier.featuresVi : tier.features).map((feature) => (
+                {getDisplayFeatures(tier).map((feature) => (
                   <li key={feature} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
                     <Check size={14} className="mt-0.5 text-green-500 shrink-0" aria-hidden="true" />
                     {feature}

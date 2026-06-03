@@ -1,20 +1,32 @@
-import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
-import './globals.css'
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' })
-const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono', display: 'swap' })
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-sans",
+  display: "swap",
+});
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: 'Drone Simulation Platform',
-  description: 'Learn, simulate, and build drone configurations',
-}
+  title: "Flyntic Studio",
+  description: "Learn, simulate, and build drone configurations",
+};
 
 // Root layout owns <html> and <body>. The [locale]/layout.tsx sets lang via
 // a client component that updates document.documentElement.lang on mount.
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html suppressHydrationWarning className={jetbrainsMono.variable}>
+    <html suppressHydrationWarning className={geistMono.variable}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -22,9 +34,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+      >
         {children}
       </body>
     </html>
-  )
+  );
 }

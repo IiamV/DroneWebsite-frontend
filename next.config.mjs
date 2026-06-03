@@ -14,12 +14,17 @@ const nextConfig = {
     NEXT_PUBLIC_BASE_PATH: isGithubPages ? `/${repoName}` : '',
   },
   images: {
-    unoptimized: true,
+    unoptimized: isGithubPages,
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       { protocol: 'https', hostname: '**.supabase.co' },
       { protocol: 'https', hostname: '**.supabase.in' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
+  },
+  poweredByHeader: false,
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@phosphor-icons/react'],
   },
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   async redirects() {
