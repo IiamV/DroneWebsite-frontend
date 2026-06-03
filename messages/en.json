@@ -481,6 +481,7 @@
     "feedbackSuccess": "Feedback sent. Thank you for helping improve the product.",
     "feedbackEmailError": "Enter a valid email address.",
     "feedbackMessageError": "Feedback must be at least 10 characters.",
+    "feedbackCaptchaError": "Complete the captcha before sending feedback.",
     "feedbackSubmitError": "Could not send feedback. Try again later.",
     "feedbackConfigError": "Feedback form is missing its Web3Forms access key.",
     "feedbackSubject": "Flyntic Studio Web Hub feedback",

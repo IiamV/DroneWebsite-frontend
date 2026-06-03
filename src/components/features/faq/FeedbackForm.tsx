@@ -1,9 +1,19 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
+import Script from 'next/script'
 import { Loader2, MessageSquare, Send } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/ui/Toast'
+
+declare global {
+  interface Window {
+    hcaptcha?: {
+      render: (container: HTMLElement, options: { sitekey: string }) => string
+      reset: (widgetId?: string) => void
+    }
+  }
+}
 
 interface FormState {
   name: string
@@ -19,6 +29,8 @@ const initialForm: FormState = {
   botcheck: '',
 }
 
+const WEB3FORMS_HCAPTCHA_SITE_KEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2'
+
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 }
@@ -31,6 +43,19 @@ export function FeedbackForm() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ?? ''
+  const captchaRef = useRef<HTMLDivElement>(null)
+  const captchaWidgetIdRef = useRef<string | null>(null)
+
+  const renderCaptcha = useCallback(() => {
+    if (!captchaRef.current || !window.hcaptcha || captchaWidgetIdRef.current) return
+    captchaWidgetIdRef.current = window.hcaptcha.render(captchaRef.current, {
+      sitekey: WEB3FORMS_HCAPTCHA_SITE_KEY,
+    })
+  }, [])
+
+  useEffect(() => {
+    renderCaptcha()
+  }, [renderCaptcha])
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({ ...current, [key]: value }))
@@ -44,6 +69,10 @@ export function FeedbackForm() {
     const email = form.email.trim()
     const message = form.message.trim()
     const name = form.name.trim()
+    const captchaToken = document
+      .querySelector<HTMLTextAreaElement>('[name="h-captcha-response"]')
+      ?.value
+      ?.trim()
 
     if (!accessKey) {
       const messageText = t('feedbackConfigError')
@@ -62,6 +91,11 @@ export function FeedbackForm() {
       return
     }
 
+    if (!captchaToken) {
+      setError(t('feedbackCaptchaError'))
+      return
+    }
+
     setSubmitting(true)
 
     const payload = new FormData()
@@ -72,6 +106,7 @@ export function FeedbackForm() {
     payload.append('email', email)
     payload.append('message', message)
     payload.append('botcheck', form.botcheck)
+    payload.append('h-captcha-response', captchaToken)
 
     try {
       const res = await fetch('https://api.web3forms.com/submit', {
@@ -87,6 +122,7 @@ export function FeedbackForm() {
       setForm(initialForm)
       setSuccess(true)
       toast(t('feedbackSuccess'), 'success')
+      window.hcaptcha?.reset(captchaWidgetIdRef.current ?? undefined)
     } catch (err) {
       const messageText = err instanceof Error ? err.message : t('feedbackSubmitError')
       setError(messageText)
@@ -119,6 +155,11 @@ export function FeedbackForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <Script
+          src="https://js.hcaptcha.com/1/api.js?render=explicit"
+          strategy="afterInteractive"
+          onLoad={renderCaptcha}
+        />
         <input
           type="checkbox"
           name="botcheck"
@@ -178,6 +219,8 @@ export function FeedbackForm() {
             className="w-full resize-y rounded-md border border-[var(--border)] bg-[var(--bg-primary)] px-3 py-3 text-sm leading-relaxed text-[var(--text-primary)] outline-none transition-colors placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
           />
         </div>
+
+        <div ref={captchaRef} className="min-h-[78px]" />
 
         {error && (
           <p role="alert" className="text-sm text-red-500">

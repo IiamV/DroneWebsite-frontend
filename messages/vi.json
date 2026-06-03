@@ -491,6 +491,7 @@
     "feedbackSuccess": "Đã gửi góp ý. Cảm ơn bạn đã giúp cải thiện sản phẩm.",
     "feedbackEmailError": "Nhập địa chỉ email hợp lệ.",
     "feedbackMessageError": "Góp ý phải có ít nhất 10 ký tự.",
+    "feedbackCaptchaError": "Hoàn thành captcha trước khi gửi góp ý.",
     "feedbackSubmitError": "Không thể gửi góp ý. Hãy thử lại sau.",
     "feedbackConfigError": "Form góp ý chưa có Web3Forms access key.",
     "feedbackSubject": "Góp ý Web Hub Flyntic Studio",
